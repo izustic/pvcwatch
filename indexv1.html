@@ -2,10 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, user-scalable=yes"
-		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>PVC Watch — Nigeria 2027 Voter Tracker</title>
 		<link rel="icon" type="image/svg+xml" href="pvcwatch-icon.svg" />
 		<link
@@ -21,13 +18,8 @@
 				messagingSenderId: "633035334735",
 				appId: "1:633035334735:web:107472802a2d1b5490363a",
 			};
-			const ANTI_DUPLICATE_CONFIG = {
-				storageKey: "pvcwatch_submitted_fingerprint", // Permanent storage key
-				ipStorageKey: "pvcwatch_ip_hash", // IP hash storage
-				adminOverrideCode: "PVC2027_HELPER", // Secret helper code
-				submissionRecordKey: "pvcwatch_submission_id", // Store submission ID
-			};
 		</script>
+
 		<style>
 			:root {
 				--green: #1a7a4a;
@@ -93,6 +85,7 @@
 			.nav-links a:hover {
 				color: var(--white);
 			}
+
 			.config-banner {
 				background: #fff3cd;
 				border-bottom: 2px solid #ffc107;
@@ -109,6 +102,7 @@
 			.config-banner.hidden {
 				display: none;
 			}
+
 			.hero {
 				background: var(--ink);
 				padding: 3.5rem 2rem 3rem;
@@ -168,6 +162,7 @@
 				background: var(--green);
 				transform: translateY(-1px);
 			}
+
 			.stats-bar {
 				background: var(--white);
 				border-bottom: 1px solid var(--border);
@@ -261,8 +256,9 @@
 			.form-body {
 				padding: 1.5rem;
 			}
+
 			.form-group {
-				margin-bottom: 1rem;
+				margin-bottom: 1.1rem;
 			}
 			.form-group label {
 				display: block;
@@ -302,26 +298,28 @@
 				box-shadow: 0 0 0 3px rgba(46, 160, 106, 0.12);
 				background: var(--white);
 			}
+
 			.checkbox-group {
 				display: flex;
 				flex-direction: column;
 				gap: 0.5rem;
 			}
 			.checkbox-item {
-				display: flex !important;
-				align-items: center !important;
-				gap: 0.6rem !important;
-				font-size: 0.85rem !important;
-				color: var(--ink-mid) !important;
-				cursor: pointer !important;
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-size: 0.85rem;
+				color: var(--ink-mid);
+				cursor: pointer;
 			}
 			.checkbox-item input[type="checkbox"] {
-				width: 16px !important;
-				height: 16px !important;
-				accent-color: var(--green-mid) !important;
-				cursor: pointer !important;
-				flex-shrink: 0 !important;
+				width: 16px;
+				height: 16px;
+				accent-color: var(--green-mid);
+				cursor: pointer;
+				flex-shrink: 0;
 			}
+
 			.submit-btn {
 				width: 100%;
 				padding: 0.9rem;
@@ -348,6 +346,7 @@
 				cursor: not-allowed;
 				transform: none;
 			}
+
 			.form-msg {
 				padding: 0.7rem 1rem;
 				border-radius: 4px;
@@ -359,63 +358,17 @@
 			.form-msg.success {
 				background: var(--green-light);
 				color: var(--green-dark);
-				border-left: 4px solid var(--green);
-				display: block;
+				border: 1px solid #a3d9b8;
 			}
 			.form-msg.error {
 				background: #fef2f0;
 				color: var(--red);
 				border: 1px solid #f5bfba;
-				display: block;
-			}
-			.form-msg.warning {
-				background: var(--gold-light);
-				color: #b16200;
-				border-left: 4px solid var(--gold);
-				display: block;
 			}
 			.form-msg.show {
 				display: block;
 			}
 
-			.admin-override-section {
-				margin-top: 1rem;
-				padding-top: 1rem;
-				border-top: 1px dashed var(--border);
-			}
-			.admin-link {
-				font-size: 0.7rem;
-				color: var(--ink-light);
-				cursor: pointer;
-				text-decoration: underline;
-				text-align: center;
-				display: inline-block;
-				width: 100%;
-			}
-			.admin-panel {
-				background: #f9f9f7;
-				border-radius: 8px;
-				padding: 0.8rem;
-				margin-top: 0.8rem;
-				display: none;
-			}
-			.admin-panel input {
-				width: 70%;
-				padding: 0.5rem;
-				font-size: 0.8rem;
-				border-radius: 6px;
-				border: 1px solid var(--border);
-				margin-bottom: 10px;
-			}
-			.admin-panel button {
-				background: var(--gold);
-				border: none;
-				padding: 0.5rem 1rem;
-				border-radius: 6px;
-				font-weight: 600;
-				cursor: pointer;
-				/* margin-left: 0.5rem; */
-			}
 			.dashboard-panel {
 				background: var(--white);
 				border: 1px solid var(--border);
@@ -475,11 +428,6 @@
 				gap: 1rem;
 				transition: background 0.15s;
 			}
-			.state-name {
-				min-width: 100px;
-				font-weight: 500;
-				font-size: 0.85rem;
-			}
 			.state-row:hover {
 				background: var(--surface);
 			}
@@ -512,6 +460,7 @@
 				min-width: 28px;
 				text-align: right;
 			}
+
 			.empty-state {
 				padding: 3rem 1.5rem;
 				text-align: center;
@@ -648,10 +597,11 @@
 				color: var(--green);
 				text-decoration: underline;
 			}
+
 			.submissions-table {
 				width: 100%;
 				border-collapse: collapse;
-				font-size: 0.8rem;
+				font-size: 0.82rem;
 			}
 			.submissions-table th {
 				text-align: left;
@@ -676,6 +626,7 @@
 			.submissions-table tr:hover td {
 				background: var(--surface);
 			}
+
 			.badge {
 				display: inline-block;
 				padding: 2px 8px;
@@ -700,6 +651,7 @@
 				font-size: 0.72rem;
 				color: var(--ink-light);
 			}
+
 			footer {
 				background: var(--ink);
 				color: rgba(255, 255, 255, 0.4);
@@ -712,6 +664,7 @@
 			footer strong {
 				color: rgba(255, 255, 255, 0.7);
 			}
+
 			.state-list::-webkit-scrollbar {
 				width: 4px;
 			}
@@ -758,15 +711,7 @@
 				background: var(--gold-light);
 				color: var(--gold);
 			}
-			.duplicate-warning {
-				background: #fff3cd;
-				border-left: 4px solid #ffc107;
-				padding: 0.5rem 1rem;
-				margin-bottom: 1rem;
-				border-radius: 6px;
-				font-size: 0.8rem;
-				display: none;
-			}
+
 			@media (max-width: 768px) {
 				.two-col {
 					grid-template-columns: 1fr;
@@ -788,12 +733,13 @@
 	</head>
 	<body>
 		<!-- Config check banner -->
-		<!-- <div class="config-banner" id="config-banner">
+		<div class="config-banner" id="config-banner">
 			⚠️ <strong>Setup required:</strong> Open this file in a text editor and
 			paste your Firebase config values into the
 			<code>FIREBASE_CONFIG</code> object at the top of the &lt;script&gt; tag.
 			See the comments for instructions.
-		</div> -->
+		</div>
+
 		<header>
 			<div class="logo">PVC<span>Watch</span></div>
 			<nav class="nav-links">
@@ -803,15 +749,17 @@
 			</nav>
 			<div id="fb-status" class="firebase-status loading">Connecting…</div>
 		</header>
+
 		<section class="hero">
 			<p class="hero-eyebrow">Nigeria 2027 — Voter Tracker Initiative</p>
-			<h1>Your Vote. <em>Your Power.</em><br />One Person, One Entry.</h1>
+			<h1>Your Vote. <em>Your Power.</em><br />Let's Count Every One.</h1>
 			<p>
 				Track new voters across all 36 states. Register, report your PVC status,
 				and help the Obidient movement prepare for 2027.
 			</p>
 			<a href="#register" class="hero-cta">Register Your PVC Status ↓</a>
 		</section>
+
 		<div class="stats-bar">
 			<div class="stat-item">
 				<div class="stat-num" id="total-registered">—</div>
@@ -830,6 +778,7 @@
 				<div class="stat-label">Registered Today</div>
 			</div>
 		</div>
+
 		<main class="main">
 			<div class="two-col" id="register">
 				<div class="form-panel">
@@ -837,17 +786,16 @@
 						<div class="form-header-icon">✓</div>
 						<div class="form-header-text">
 							<h3>Voter Registration Form</h3>
-							<p>Submit once · Takes 60 seconds</p>
+							<p>Submit once · Takes 60 seconds · Stored in Firebase</p>
 						</div>
 					</div>
 					<div class="form-body">
-						<div id="duplicate-warning" class="duplicate-warning"></div>
 						<div class="form-group">
 							<label>First Name</label>
 							<input
 								type="text"
 								id="fname"
-								placeholder="e.g. Izu"
+								placeholder="e.g. Chukwuemeka"
 								autocomplete="given-name"
 							/>
 						</div>
@@ -883,14 +831,17 @@
 							<div class="checkbox-group">
 								<label class="checkbox-item"
 									><input type="checkbox" name="channel" value="whatsapp" />
-									WhatsApp</label
-								><label class="checkbox-item"
+									WhatsApp group</label
+								>
+								<label class="checkbox-item"
 									><input type="checkbox" name="channel" value="twitter" />
-									X/Twitter</label
-								><label class="checkbox-item"
+									Twitter / X</label
+								>
+								<label class="checkbox-item"
 									><input type="checkbox" name="channel" value="friend" />
-									Friend/Family</label
-								><label class="checkbox-item"
+									Friend / family</label
+								>
+								<label class="checkbox-item"
 									><input type="checkbox" name="channel" value="community" />
 									Community / church / mosque</label
 								>
@@ -900,52 +851,31 @@
 							Submit My Registration
 						</button>
 						<div class="form-msg" id="form-msg"></div>
-						<div class="admin-override-section">
-							<span class="admin-link" id="toggleAdminBtn"
-								>🔐 Authorized helper? Click here to assist with override
-								code</span
-							>
-							<div class="admin-panel" id="adminPanel">
-								<input
-									type="text"
-									id="adminCode"
-									placeholder="Enter assistant override code"
-									autocomplete="off"
-								/>
-								<button id="unlockHelperBtn">
-									Unlock & Submit for someone
-								</button>
-								<div
-									id="helperStatus"
-									style="font-size: 0.7rem; margin-top: 8px"
-								></div>
-							</div>
-						</div>
 					</div>
 				</div>
+
 				<div id="dashboard">
 					<div class="dashboard-panel">
 						<div class="dash-header">
 							<div class="dash-title">New Voters by State</div>
-							<div class="live-badge"><span class="live-dot"></span> Live</div>
+							<div class="live-badge">
+								<span class="live-dot"></span> Live · Real-time
+							</div>
 						</div>
 						<div class="state-list" id="state-list">
-							<div
-								class="empty-state"
-								style="padding: 2rem; text-align: center"
-							>
+							<div class="empty-state">
 								<div class="big-icon">🔄</div>
-								Loading data...
+								Connecting to Firebase…
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
 			<div class="full-width">
 				<div class="section-title">PVC Collection Tracker</div>
 				<div class="section-sub">
-					Real-time breakdown of PVC status by state. This helps identify areas
-					with high voter engagement and those needing more outreach.
+					Real-time breakdown of PVC status by state — live from Firebase
 				</div>
 				<div class="pvc-grid" id="pvc-grid">
 					<div
@@ -957,10 +887,11 @@
 							font-size: 0.85rem;
 						"
 					>
-						Loading insights…
+						Connecting…
 					</div>
 				</div>
 			</div>
+
 			<div class="full-width">
 				<div class="section-title">Recent Submissions</div>
 				<div class="section-sub">
@@ -971,11 +902,11 @@
 						<thead>
 							<tr>
 								<th>Name</th>
-								<th>Residence</th>
+								<th>Residence State</th>
 								<th>PVC State</th>
-								<th>Status</th>
+								<th>PVC Status</th>
 								<th>Source</th>
-								<th>Time</th>
+								<th>Submitted</th>
 							</tr>
 						</thead>
 						<tbody id="submissions-body">
@@ -988,13 +919,14 @@
 										color: var(--ink-light);
 									"
 								>
-									Awaiting data…
+									Connecting to Firebase…
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 			</div>
+
 			<div class="full-width" id="outreach">
 				<div class="section-title">Mobile Outreach Links</div>
 				<div class="section-sub">
@@ -1044,6 +976,7 @@
 				</div>
 			</div>
 		</main>
+
 		<footer>
 			<strong>PVCWatch</strong> — A civic initiative for the Obidient Movement ·
 			Nigeria 2027<br />
@@ -1052,6 +985,7 @@
 			Not affiliated with INEC or any political party.
 		</footer>
 
+		<!-- Firebase SDKs -->
 		<script type="module">
 			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 			import {
@@ -1059,7 +993,11 @@
 				collection,
 				addDoc,
 				onSnapshot,
+				query,
+				orderBy,
+				limit,
 				serverTimestamp,
+				getDocs,
 			} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 			const STATES = [
@@ -1102,6 +1040,13 @@
 				"Zamfara",
 			];
 
+			const SUBMITTED_KEY = "pvcwatch_submitted_v2";
+
+			function isConfigured() {
+				const c = FIREBASE_CONFIG;
+				return c.apiKey && !c.apiKey.includes("PASTE_YOUR");
+			}
+
 			function populateSelects() {
 				const s1 = document.getElementById("state-select");
 				const s2 = document.getElementById("reg-state-select");
@@ -1109,258 +1054,145 @@
 					s1.innerHTML += `<option value="${s}">${s}</option>`;
 					s2.innerHTML += `<option value="${s}">${s}</option>`;
 				});
-				const yearSelect = document.getElementById("year-select");
-				const currentYear = new Date().getFullYear();
-				for (let y = currentYear; y >= 2000; y--)
-					yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+				const yr = document.getElementById("year-select");
+				const cur = new Date().getFullYear();
+				for (let y = cur; y >= 2000; y--)
+					yr.innerHTML += `<option value="${y}">${y}</option>`;
 			}
-			populateSelects();
 
-			// ========== PERSISTENT ANTI-DUPLICATE SYSTEM ==========
-			// Creates a persistent fingerprint that survives page reloads
-			function generatePersistentFingerprint() {
-				// Combine multiple browser characteristics
-				const ua = navigator.userAgent;
-				const screenRes = `${screen.width}x${screen.height}x${screen.colorDepth}`;
-				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-				const language = navigator.language;
-				const platform = navigator.platform;
-				const cpuCores = navigator.hardwareConcurrency || "unknown";
-				const deviceMemory = navigator.deviceMemory || "unknown";
+			function timeAgo(ts) {
+				if (!ts) return "—";
+				const ms = ts.toMillis ? ts.toMillis() : ts;
+				const diff = Date.now() - ms;
+				const m = Math.floor(diff / 60000);
+				if (m < 1) return "just now";
+				if (m < 60) return m + "m ago";
+				const h = Math.floor(m / 60);
+				if (h < 24) return h + "h ago";
+				return Math.floor(h / 24) + "d ago";
+			}
 
-				// Create a unique string
-				const fingerprintString = `${ua}|${screenRes}|${timezone}|${language}|${platform}|${cpuCores}|${deviceMemory}`;
+			function anonymise(name) {
+				if (!name || name.length < 2) return "—";
+				return name[0].toUpperCase() + "*".repeat(Math.min(name.length - 1, 4));
+			}
 
-				// Simple hash function
-				let hash = 0;
-				for (let i = 0; i < fingerprintString.length; i++) {
-					hash = (hash << 5) - hash + fingerprintString.charCodeAt(i);
-					hash = hash & hash;
+			function animateNum(id, target) {
+				const el = document.getElementById(id);
+				const cur = parseInt(el.textContent) || 0;
+				if (isNaN(target)) {
+					el.textContent = target;
+					return;
 				}
-				return Math.abs(hash).toString(16);
+				if (cur === target) return;
+				const step = Math.ceil(Math.abs(target - cur) / 15);
+				let v = cur;
+				const iv = setInterval(() => {
+					v =
+						v < target
+							? Math.min(v + step, target)
+							: Math.max(v - step, target);
+					el.textContent = v.toLocaleString();
+					if (v === target) clearInterval(iv);
+				}, 40);
 			}
 
-			// Generate IP-like identifier (simulated - in production, use actual IP from server)
-			function generateIPHash() {
-				// This simulates an IP-based identifier
-				// In production, you'd get this from your backend API
-				const storedIP = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.ipStorageKey,
-				);
-				if (storedIP) return storedIP;
-
-				// Generate a persistent random ID for this browser/device combination
-				const newIPHash =
-					"ip_" + generatePersistentFingerprint().substring(0, 12);
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.ipStorageKey, newIPHash);
-				return newIPHash;
-			}
-
-			// Check if user has already submitted (PERSISTENT across reloads)
-			function hasAlreadySubmitted() {
-				const storedFingerprint = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.storageKey,
-				);
-				const currentFingerprint = generatePersistentFingerprint();
-				const storedIP = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.ipStorageKey,
-				);
-				const currentIP = generateIPHash();
-
-				// Check if either fingerprint or IP matches stored records
-				const fingerprintMatch =
-					storedFingerprint && storedFingerprint === currentFingerprint;
-				const ipMatch = storedIP && storedIP === currentIP;
-
-				// Also check if we have a submission ID stored
-				const hasSubmissionId = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.submissionRecordKey,
-				);
-
-				if (fingerprintMatch || ipMatch || hasSubmissionId) {
-					return true;
-				}
-				return false;
-			}
-
-			// Mark as submitted with PERSISTENT storage
-			function markAsPermanentlySubmitted(docId) {
-				const fingerprint = generatePersistentFingerprint();
-				const ipHash = generateIPHash();
-
-				// Store in localStorage - this survives page reloads and browser restarts
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fingerprint);
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.ipStorageKey, ipHash);
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.submissionRecordKey, docId);
-
-				// Also store in sessionStorage as backup
-				sessionStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fingerprint);
-				sessionStorage.setItem(
-					ANTI_DUPLICATE_CONFIG.submissionRecordKey,
-					docId,
-				);
-			}
-
-			// Get submission info if exists
-			function getExistingSubmissionInfo() {
-				const submitted = hasAlreadySubmitted();
-				if (submitted) {
-					return {
-						submitted: true,
-						docId: localStorage.getItem(
-							ANTI_DUPLICATE_CONFIG.submissionRecordKey,
-						),
-						fingerprint: localStorage.getItem(ANTI_DUPLICATE_CONFIG.storageKey),
-					};
-				}
-				return { submitted: false };
-			}
-
-			// Show warning if already submitted (persistent message)
-			function checkAndShowDuplicateWarning() {
-				const submitted = hasAlreadySubmitted();
-				const warningDiv = document.getElementById("duplicate-warning");
-
-				if (submitted) {
-					warningDiv.innerHTML = `
-                ⚠️ <strong>You have already registered!</strong> This device has already submitted a response. 
-                One person, one submission policy is enforced. If you're helping someone else, 
-                use the "Authorized helper" override code below.
-            `;
-					warningDiv.style.display = "block";
-
-					// Disable submit button but keep form visible for helpers
-					const btn = document.getElementById("submit-btn");
-					btn.disabled = true;
-					btn.style.opacity = "0.6";
-					btn.title =
-						"You've already registered. Use helper override to assist others.";
-				} else {
-					warningDiv.style.display = "none";
-					const btn = document.getElementById("submit-btn");
-					btn.disabled = false;
-					btn.style.opacity = "1";
-				}
-			}
-
-			let adminOverrideActive = false;
-			let adminOverrideUsed = false;
-
-			// Admin helper logic
-			document
-				.getElementById("toggleAdminBtn")
-				.addEventListener("click", () => {
-					const panel = document.getElementById("adminPanel");
-					panel.style.display =
-						panel.style.display === "block" ? "none" : "block";
-				});
-
-			document
-				.getElementById("unlockHelperBtn")
-				.addEventListener("click", () => {
-					const codeInput = document.getElementById("adminCode").value.trim();
-					if (codeInput === ANTI_DUPLICATE_CONFIG.adminOverrideCode) {
-						adminOverrideActive = true;
-						adminOverrideUsed = false;
-						document.getElementById("helperStatus").innerHTML =
-							"✅ Override ACTIVE! You can now submit for another person. This is a one-time use.";
-						document.getElementById("helperStatus").style.color = "green";
-
-						// Re-enable submit button if it was disabled
-						const btn = document.getElementById("submit-btn");
-						btn.disabled = false;
-						btn.style.opacity = "1";
-						btn.style.background = "var(--gold)";
-						btn.innerHTML = "🌟 SUBMIT FOR ASSISTED PERSON (Override Mode)";
-
-						// Clear any warning about duplicate
-						const warningDiv = document.getElementById("duplicate-warning");
-						warningDiv.style.display = "none";
-
-						setTimeout(() => {
-							document.getElementById("adminPanel").style.display = "none";
-						}, 2000);
-					} else {
-						document.getElementById("helperStatus").innerHTML =
-							"❌ Invalid override code. Contact campaign organizer for the correct code.";
-						document.getElementById("helperStatus").style.color = "red";
-					}
-				});
-
-			let dbReady = false,
-				db = null,
-				colRef = null;
-			let allDocs = [];
-
-			function renderDashboard(docs) {
-				allDocs = docs;
-				const total = docs.length;
+			function renderAll(docs) {
+				const today = new Date().toDateString();
 				const hasPvc = docs.filter((d) => d.pvcStatus === "yes").length;
-				const uniqueStates = new Set(docs.map((d) => d.state)).size;
-				const todayStr = new Date().toDateString();
-				const todayCount = docs.filter(
-					(d) =>
-						d.ts &&
-						new Date(d.ts.toMillis ? d.ts.toMillis() : d.ts).toDateString() ===
-							todayStr,
-				).length;
-				document.getElementById("total-registered").innerText =
-					total.toLocaleString();
-				document.getElementById("total-pvc").innerText =
-					hasPvc.toLocaleString();
-				document.getElementById("total-states").innerText = uniqueStates;
-				document.getElementById("today-count").innerText = todayCount;
+				const states = new Set(docs.map((d) => d.state)).size;
+				const todayCount = docs.filter((d) => {
+					const ms = d.ts?.toMillis ? d.ts.toMillis() : d.ts;
+					return ms && new Date(ms).toDateString() === today;
+				}).length;
 
+				animateNum("total-registered", docs.length);
+				animateNum("total-pvc", hasPvc);
+				animateNum("total-states", states);
+				animateNum("today-count", todayCount);
+
+				// State bar chart
 				const counts = {};
-				docs.forEach((d) => (counts[d.state] = (counts[d.state] || 0) + 1));
+				docs.forEach((d) => {
+					counts[d.state] = (counts[d.state] || 0) + 1;
+				});
 				const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 				const max = sorted[0]?.[1] || 1;
-				const stateContainer = document.getElementById("state-list");
-				if (sorted.length === 0)
-					stateContainer.innerHTML = `<div style="padding:2rem;text-align:center;">No submissions yet.</div>`;
-				else
-					stateContainer.innerHTML = sorted
+				const stateEl = document.getElementById("state-list");
+				if (!sorted.length) {
+					stateEl.innerHTML = `<div class="empty-state"><div class="big-icon">🗺️</div>No submissions yet.<br>Be the first to register from your state.</div>`;
+				} else {
+					stateEl.innerHTML = sorted
 						.map(
-							([st, cnt]) =>
-								`<div class="state-row"><span class="state-name">${st}</span><div class="state-bar-wrap"><div class="state-bar" style="width:${(cnt / max) * 100}%"></div></div><span class="state-count">${cnt}</span></div>`,
+							([state, count]) => `
+      <div class="state-row">
+        <span class="state-name">${state}</span>
+        <div class="state-bar-wrap"><div class="state-bar" style="width:${Math.round((count / max) * 100)}%"></div></div>
+        <span class="state-count">${count}</span>
+      </div>`,
 						)
 						.join("");
+				}
 
-				const regMap = {};
+				// PVC grid
+				const stateMap = {};
 				docs.forEach((d) => {
-					if (!regMap[d.regState])
-						regMap[d.regState] = { yes: 0, no: 0, processing: 0 };
-					regMap[d.regState][d.pvcStatus]++;
+					if (!stateMap[d.regState])
+						stateMap[d.regState] = { yes: 0, no: 0, processing: 0 };
+					if (d.pvcStatus in stateMap[d.regState])
+						stateMap[d.regState][d.pvcStatus]++;
 				});
-				const gridDiv = document.getElementById("pvc-grid");
-				const sortedPVC = Object.entries(regMap).sort(
-					(a, b) =>
+				const sortedPVC = Object.entries(stateMap).sort((a, b) => {
+					return (
 						b[1].yes +
 						b[1].no +
 						b[1].processing -
-						(a[1].yes + a[1].no + a[1].processing),
-				);
-				if (sortedPVC.length === 0)
-					gridDiv.innerHTML = `<div style="grid-column:1/-1;text-align:center;">No PVC data yet</div>`;
-				else
-					gridDiv.innerHTML = sortedPVC
-						.map(([state, stats]) => {
-							const totalState = stats.yes + stats.no + stats.processing;
-							const pct = totalState
-								? Math.round((stats.yes / totalState) * 100)
-								: 0;
-							return `<div class="pvc-card"><div class="pvc-state">${state}</div><div class="pvc-count">${pct}%</div><div class="pvc-label">${stats.yes} of ${totalState} have PVC</div><span class="badge badge-yes">collected ${pct}%</span></div>`;
+						(a[1].yes + a[1].no + a[1].processing)
+					);
+				});
+				const grid = document.getElementById("pvc-grid");
+				if (!sortedPVC.length) {
+					grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--ink-light);padding:2rem;font-size:0.85rem">No PVC data yet. Submit the form above to populate this tracker.</div>`;
+				} else {
+					grid.innerHTML = sortedPVC
+						.map(([state, d]) => {
+							const total = d.yes + d.no + d.processing;
+							const pct = total ? Math.round((d.yes / total) * 100) : 0;
+							const dom =
+								d.yes >= d.no && d.yes >= d.processing
+									? "yes"
+									: d.processing >= d.no
+										? "processing"
+										: "no";
+							const pillText =
+								dom === "yes"
+									? "Mostly collected"
+									: dom === "processing"
+										? "Mostly pending"
+										: "Mostly not started";
+							return `<div class="pvc-card">
+        <div class="pvc-state">${state}</div>
+        <div class="pvc-count">${pct}%</div>
+        <div class="pvc-label">${d.yes} of ${total} have PVC</div>
+        <span class="pvc-pill pvc-${dom}">${pillText}</span>
+      </div>`;
 						})
 						.join("");
+				}
 
+				// Recent submissions table
+				const body = document.getElementById("submissions-body");
 				const recent = [...docs]
-					.sort((a, b) => (b.ts?.toMillis?.() || 0) - (a.ts?.toMillis?.() || 0))
-					.slice(0, 12);
-				const tbody = document.getElementById("submissions-body");
-				if (recent.length === 0)
-					tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Waiting for first submissions</td></tr>`;
-				else
-					tbody.innerHTML = recent
+					.sort((a, b) => {
+						const ta = a.ts?.toMillis ? a.ts.toMillis() : a.ts || 0;
+						const tb = b.ts?.toMillis ? b.ts.toMillis() : b.ts || 0;
+						return tb - ta;
+					})
+					.slice(0, 15);
+				if (!recent.length) {
+					body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--ink-light)">Waiting for first submissions…</td></tr>`;
+				} else {
+					body.innerHTML = recent
 						.map((s) => {
 							const cls =
 								s.pvcStatus === "yes"
@@ -1374,214 +1206,136 @@
 									: s.pvcStatus === "processing"
 										? "In Progress"
 										: "No PVC";
-							const anon = s.fname
-								? s.fname[0].toUpperCase() +
-									"*".repeat(Math.min(s.fname.length - 1, 3))
-								: "—";
-							return `<tr><td>${anon}</td><td>${s.state || "—"}</td><td>${s.regState || "—"}</td><td><span class="badge ${cls}">${txt}</span></td><td>${s.channels || "direct"}</td><td class="time-ago">${timeAgo(s.ts)}</td></tr>`;
+							return `<tr>
+        <td>${anonymise(s.fname)}</td>
+        <td>${s.state || "—"}</td>
+        <td>${s.regState || "—"}</td>
+        <td><span class="badge ${cls}">${txt}</span></td>
+        <td style="color:var(--ink-light)">${s.channels || "direct"}</td>
+        <td class="time-ago">${timeAgo(s.ts)}</td>
+      </tr>`;
 						})
 						.join("");
-			}
-
-			function timeAgo(ts) {
-				if (!ts) return "recent";
-				const ms = ts.toMillis ? ts.toMillis() : ts;
-				const diff = Date.now() - ms;
-				const mins = Math.floor(diff / 60000);
-				if (mins < 1) return "just now";
-				if (mins < 60) return `${mins}m ago`;
-				const hrs = Math.floor(mins / 60);
-				if (hrs < 24) return `${hrs}h ago`;
-				return `${Math.floor(hrs / 24)}d ago`;
-			}
-
-			function initFirebase() {
-				if (
-					!FIREBASE_CONFIG.apiKey ||
-					FIREBASE_CONFIG.apiKey.includes("PASTE_YOUR")
-				) {
-					const statusEl = document.getElementById("fb-status");
-					statusEl.innerText = "⚠️ Config missing";
-					statusEl.classList.remove("loading", "ok");
-					statusEl.classList.add("err");
-					return false;
 				}
+			}
+
+			populateSelects();
+
+			if (!isConfigured()) {
+				document.getElementById("config-banner").classList.remove("hidden");
+				document.getElementById("fb-status").textContent = "Not configured";
+				document.getElementById("fb-status").className = "firebase-status err";
+				document.getElementById("state-list").innerHTML =
+					`<div class="empty-state"><div class="big-icon">⚙️</div>Paste your Firebase config to see live data.</div>`;
+				document.getElementById("pvc-grid").innerHTML =
+					`<div style="grid-column:1/-1;text-align:center;color:var(--ink-light);padding:2rem;font-size:0.85rem">Firebase not configured yet.</div>`;
+				document.getElementById("submissions-body").innerHTML =
+					`<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--ink-light)">Firebase not configured yet.</td></tr>`;
+				animateNum("total-registered", 0);
+				animateNum("total-pvc", 0);
+				animateNum("total-states", 0);
+				animateNum("today-count", 0);
+			} else {
 				try {
 					const app = initializeApp(FIREBASE_CONFIG);
-					db = getFirestore(app);
-					colRef = collection(db, "voters");
-					onSnapshot(
-						colRef,
-						(snap) => {
-							const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-							renderDashboard(docs);
+					const db = getFirestore(app);
+					const col = collection(db, "voters");
 
-							// FIX: Remove 'loading' class and add 'ok'
-							const statusEl = document.getElementById("fb-status");
-							statusEl.innerText = "🔴 Live";
-							statusEl.classList.remove("loading", "err");
-							statusEl.classList.add("ok");
+					document.getElementById("fb-status").textContent = "🔴 Live";
+					document.getElementById("fb-status").className = "firebase-status ok";
+					document.getElementById("config-banner").classList.add("hidden");
+
+					// Real-time listener — updates instantly for ALL users
+					onSnapshot(
+						col,
+						(snapshot) => {
+							const docs = snapshot.docs.map((d) => ({
+								id: d.id,
+								...d.data(),
+							}));
+							renderAll(docs);
 						},
 						(err) => {
 							console.error(err);
-							const statusEl = document.getElementById("fb-status");
-							statusEl.innerText = "Error";
-							statusEl.classList.remove("loading", "ok");
-							statusEl.classList.add("err");
+							document.getElementById("fb-status").textContent = "Error";
+							document.getElementById("fb-status").className =
+								"firebase-status err";
 						},
 					);
-					return true;
-				} catch (e) {
-					console.error(e);
-					const statusEl = document.getElementById("fb-status");
-					statusEl.innerText = "Init error";
-					statusEl.classList.remove("loading", "ok");
-					statusEl.classList.add("err");
-					return false;
-				}
-			}
-			initFirebase();
 
-			window.submitForm = async function () {
-				const msgDiv = document.getElementById("form-msg");
-				msgDiv.className = "form-msg";
-				msgDiv.style.display = "none";
+					// Submit handler
+					window.submitForm = async function () {
+						const fname = document.getElementById("fname").value.trim();
+						const state = document.getElementById("state-select").value;
+						const regState = document.getElementById("reg-state-select").value;
+						const year = document.getElementById("year-select").value;
+						const pvcStatus = document.getElementById("pvc-status").value;
+						const msg = document.getElementById("form-msg");
 
-				const fname = document.getElementById("fname").value.trim();
-				const state = document.getElementById("state-select").value;
-				const regState = document.getElementById("reg-state-select").value;
-				const year = document.getElementById("year-select").value;
-				const pvcStatus = document.getElementById("pvc-status").value;
-
-				if (!fname || !state || !regState || !year || !pvcStatus) {
-					showMsg("Please fill all fields.", "error");
-					return;
-				}
-
-				// Check for duplicate submission (PERSISTENT check)
-				const alreadySubmitted = hasAlreadySubmitted();
-
-				if (alreadySubmitted && !adminOverrideActive) {
-					showMsg(
-						"❌ This device has already registered. Only one submission per person is allowed. If you're helping someone else, use the 'Authorized helper' override code below.",
-						"warning",
-					);
-					return;
-				}
-
-				// If admin override is active but already used this session, prevent multiple
-				if (adminOverrideActive && adminOverrideUsed) {
-					showMsg(
-						"Override already used for this session. Refresh page or re-enter code to assist another person.",
-						"warning",
-					);
-					return;
-				}
-
-				const btn = document.getElementById("submit-btn");
-				btn.disabled = true;
-				btn.innerHTML =
-					'<span style="display:inline-block; width:12px;height:12px;border:2px solid white; border-top-color:transparent; border-radius:50%; animation: spin 0.6s linear infinite;"></span> Recording...';
-
-				const channels =
-					[...document.querySelectorAll('input[name="channel"]:checked')]
-						.map((c) => c.value)
-						.join(", ") || "direct";
-
-				try {
-					const docRef = await addDoc(colRef, {
-						fname,
-						state,
-						regState,
-						year: parseInt(year),
-						pvcStatus,
-						channels,
-						ts: serverTimestamp(),
-						submittedByHelper: adminOverrideActive ? true : false,
-					});
-
-					// Only mark as permanently submitted if NOT in admin override mode
-					if (!adminOverrideActive) {
-						markAsPermanentlySubmitted(docRef.id);
-						showMsg(
-							`✅ Registration successful! ${fname}, your data is now permanently recorded. This device cannot submit again.`,
-							"success",
-						);
-					} else {
-						showMsg(
-							`✅ Assisted registration complete! ${fname} has been registered. Override mode will now deactivate.`,
-							"success",
-						);
-						adminOverrideUsed = true;
-						adminOverrideActive = false;
-					}
-
-					btn.innerHTML = "✓ Registered!";
-					btn.style.background = "#0d4a2d";
-
-					// Reset admin override UI
-					if (adminOverrideUsed) {
-						setTimeout(() => {
-							const originalBtn = document.getElementById("submit-btn");
-							originalBtn.innerHTML = "✓ Submit & Secure Record";
-							originalBtn.style.background = "";
-							originalBtn.disabled = hasAlreadySubmitted() ? true : false;
-							if (hasAlreadySubmitted() && !adminOverrideActive) {
-								originalBtn.disabled = true;
-								originalBtn.style.opacity = "0.6";
-							}
-						}, 2000);
-					}
-
-					setTimeout(() => {
-						btn.disabled = false;
-						if (!adminOverrideActive && hasAlreadySubmitted()) {
-							btn.disabled = true;
-							btn.style.opacity = "0.6";
+						if (!fname || !state || !regState || !year || !pvcStatus) {
+							msg.textContent = "Please fill in all fields before submitting.";
+							msg.className = "form-msg error show";
+							return;
 						}
-					}, 2000);
 
-					// Refresh warning display
-					checkAndShowDuplicateWarning();
+						const submittedId = localStorage.getItem(SUBMITTED_KEY);
+						if (submittedId) {
+							msg.textContent =
+								"You have already submitted. Thank you for registering!";
+							msg.className = "form-msg success show";
+							return;
+						}
+
+						const btn = document.getElementById("submit-btn");
+						btn.disabled = true;
+						btn.innerHTML = '<span class="spinner"></span> Saving to Firebase…';
+
+						try {
+							const channels =
+								[...document.querySelectorAll('input[name="channel"]:checked')]
+									.map((c) => c.value)
+									.join(", ") || "direct";
+							const docRef = await addDoc(col, {
+								fname,
+								state,
+								regState,
+								year: parseInt(year),
+								pvcStatus,
+								channels,
+								ts: serverTimestamp(),
+							});
+
+							localStorage.setItem(SUBMITTED_KEY, docRef.id);
+							btn.innerHTML = "✓ Submitted — Thank You!";
+							btn.style.background = "var(--green-dark)";
+							msg.textContent = `Welcome, ${fname}! Your data has been saved to Firebase and is now visible to everyone. Share the link to bring more voters in.`;
+							msg.className = "form-msg success show";
+						} catch (e) {
+							console.error(e);
+							btn.disabled = false;
+							btn.textContent = "Submit My Registration";
+							msg.textContent =
+								"Error saving to Firebase. Check your config and Firestore rules.";
+							msg.className = "form-msg error show";
+						}
+					};
 				} catch (e) {
 					console.error(e);
-					showMsg(
-						"Firebase error: check rules/permissions. Contact admin.",
-						"error",
-					);
-					btn.disabled = false;
-					btn.innerHTML = "✓ Submit & Secure Record";
+					document.getElementById("fb-status").textContent = "Config error";
+					document.getElementById("fb-status").className =
+						"firebase-status err";
 				}
-			};
-
-			function showMsg(text, type) {
-				const m = document.getElementById("form-msg");
-				m.innerText = text;
-				m.className = `form-msg ${type}`;
-				m.style.display = "block";
-				setTimeout(() => {
-					if (m.style.display === "block") m.style.display = "none";
-				}, 5000);
 			}
 
-			// Check on page load
-			window.addEventListener("DOMContentLoaded", () => {
-				checkAndShowDuplicateWarning();
-			});
-
-			document.querySelectorAll('a[href^="#"]').forEach((a) =>
+			document.querySelectorAll('a[href^="#"]').forEach((a) => {
 				a.addEventListener("click", (e) => {
-					const target = document.querySelector(a.getAttribute("href"));
-					if (target) {
+					const t = document.querySelector(a.getAttribute("href"));
+					if (t) {
 						e.preventDefault();
-						target.scrollIntoView({ behavior: "smooth" });
+						t.scrollIntoView({ behavior: "smooth", block: "start" });
 					}
-				}),
-			);
-
-			const styleSheet = document.createElement("style");
-			styleSheet.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
-			document.head.appendChild(styleSheet);
+				});
+			});
 		</script>
 	</body>
 </html>
