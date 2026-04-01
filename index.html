@@ -410,10 +410,10 @@
 				/* appearance: checkbox;
 				-webkit-appearance: checkbox; */
 			}
-      input[type="checkbox"]:checked {
-  background: var(--green-mid);
-  border-color: var(--green-mid);
-}
+			input[type="checkbox"]:checked {
+				background: var(--green-mid);
+				border-color: var(--green-mid);
+			}
 			/* .checkbox-item input[type="checkbox"] {
 				pointer-events: none;
 			} */
@@ -3797,18 +3797,20 @@
 						"";
 				}
 
+				const payload = {
+					name,
+					phone,
+					email,
+					state,
+					team,
+					teamLabel: TEAM_LABELS[team],
+					experience,
+					...extra,
+					ts: serverTimestamp(),
+				};
+				// console.log("Final Data being sent to Firestore:", payload);
 				try {
-					await addDoc(volunteersCol, {
-						name,
-						phone,
-						email,
-						state,
-						team,
-						teamLabel: TEAM_LABELS[team],
-						experience,
-						...extra,
-						ts: serverTimestamp(),
-					});
+					await addDoc(volunteersCol, payload);
 					showMsg(
 						"vol-form-msg",
 						`✅ Welcome aboard, ${name}! You've joined ${TEAM_LABELS[team]}. A coordinator will contact you on WhatsApp to confirm your role and next steps.`,
