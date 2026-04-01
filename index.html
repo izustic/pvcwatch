@@ -22,10 +22,11 @@
 				appId: "1:633035334735:web:107472802a2d1b5490363a",
 			};
 			const ANTI_DUPLICATE_CONFIG = {
-				storageKey: "pvcwatch_submitted_fingerprint", // Permanent storage key
-				ipStorageKey: "pvcwatch_ip_hash", // IP hash storage
-				adminOverrideCode: "PVC2027_HELPER", // Secret helper code
-				submissionRecordKey: "pvcwatch_submission_id", // Store submission ID
+				storageKey: "pvcwatch_submitted_fingerprint",
+				ipStorageKey: "pvcwatch_ip_hash",
+				adminOverrideCode: "PVC2027_HELPER",
+				submissionRecordKey: "pvcwatch_submission_id",
+				adminPIN: "2027OBI", // PIN to unlock the raw submissions table
 			};
 		</script>
 		<style>
@@ -37,6 +38,7 @@
 				--gold: #c9922a;
 				--gold-light: #fdf3e3;
 				--red: #b03a2e;
+				--red-light: #fef2f0;
 				--ink: #111a14;
 				--ink-mid: #3a4a3e;
 				--ink-light: #6b7a6e;
@@ -44,7 +46,9 @@
 				--white: #ffffff;
 				--border: #d4ddd6;
 			}
-			* {
+			*,
+			*::before,
+			*::after {
 				box-sizing: border-box;
 				margin: 0;
 				padding: 0;
@@ -56,6 +60,7 @@
 				min-height: 100vh;
 			}
 
+			/* ── HEADER ── */
 			header {
 				background: var(--ink);
 				padding: 0 2rem;
@@ -80,11 +85,12 @@
 			.nav-links {
 				display: flex;
 				gap: 1.5rem;
+				flex-wrap: wrap;
 			}
 			.nav-links a {
 				color: rgba(255, 255, 255, 0.6);
 				text-decoration: none;
-				font-size: 0.82rem;
+				font-size: 0.78rem;
 				font-weight: 500;
 				letter-spacing: 0.05em;
 				text-transform: uppercase;
@@ -93,22 +99,58 @@
 			.nav-links a:hover {
 				color: var(--white);
 			}
-			.config-banner {
-				background: #fff3cd;
-				border-bottom: 2px solid #ffc107;
-				padding: 0.8rem 2rem;
-				font-size: 0.85rem;
-				color: #856404;
-				display: flex;
-				align-items: center;
-				gap: 0.6rem;
-			}
-			.config-banner strong {
+			.firebase-status {
+				font-size: 0.72rem;
+				padding: 4px 10px;
+				border-radius: 20px;
 				font-weight: 600;
 			}
-			.config-banner.hidden {
-				display: none;
+			.firebase-status.ok {
+				background: var(--green-light);
+				color: var(--green-dark);
 			}
+			.firebase-status.err {
+				background: #fef2f0;
+				color: var(--red);
+			}
+			.firebase-status.loading {
+				background: var(--gold-light);
+				color: var(--gold);
+			}
+
+			/* ── TAB NAV ── */
+			.tab-bar {
+				background: var(--white);
+				border-bottom: 1px solid var(--border);
+				display: flex;
+				gap: 0;
+				overflow-x: auto;
+			}
+			.tab-btn {
+				padding: 0.9rem 1.5rem;
+				font-size: 0.82rem;
+				font-weight: 600;
+				cursor: pointer;
+				border: none;
+				background: none;
+				color: var(--ink-light);
+				border-bottom: 3px solid transparent;
+				transition:
+					color 0.2s,
+					border-color 0.2s;
+				white-space: nowrap;
+				letter-spacing: 0.03em;
+				text-transform: uppercase;
+			}
+			.tab-btn:hover {
+				color: var(--ink);
+			}
+			.tab-btn.active {
+				color: var(--green);
+				border-bottom-color: var(--green);
+			}
+
+			/* ── HERO ── */
 			.hero {
 				background: var(--ink);
 				padding: 3.5rem 2rem 3rem;
@@ -168,14 +210,16 @@
 				background: var(--green);
 				transform: translateY(-1px);
 			}
+
+			/* ── STATS BAR ── */
 			.stats-bar {
 				background: var(--white);
 				border-bottom: 1px solid var(--border);
 				display: grid;
-				grid-template-columns: repeat(4, 1fr);
+				grid-template-columns: repeat(5, 1fr);
 			}
 			.stat-item {
-				padding: 1.4rem 1.5rem;
+				padding: 1.2rem 1rem;
 				border-right: 1px solid var(--border);
 				text-align: center;
 			}
@@ -184,20 +228,21 @@
 			}
 			.stat-num {
 				font-family: "Playfair Display", serif;
-				font-size: 2rem;
+				font-size: 1.8rem;
 				font-weight: 700;
 				color: var(--green);
 				line-height: 1;
 				margin-bottom: 0.3rem;
 			}
 			.stat-label {
-				font-size: 0.73rem;
+				font-size: 0.68rem;
 				text-transform: uppercase;
 				letter-spacing: 0.08em;
 				color: var(--ink-light);
 				font-weight: 500;
 			}
 
+			/* ── MAIN LAYOUT ── */
 			.main {
 				max-width: 1200px;
 				margin: 0 auto;
@@ -216,6 +261,7 @@
 				color: var(--ink-light);
 				margin-bottom: 1.5rem;
 				font-weight: 300;
+				line-height: 1.6;
 			}
 			.two-col {
 				display: grid;
@@ -223,7 +269,11 @@
 				gap: 2rem;
 				margin-bottom: 3rem;
 			}
+			.full-width {
+				margin-bottom: 3rem;
+			}
 
+			/* ── PANELS ── */
 			.form-panel {
 				background: var(--white);
 				border: 1px solid var(--border);
@@ -231,21 +281,37 @@
 				overflow: hidden;
 			}
 			.form-header {
-				background: var(--green-dark);
 				padding: 1.2rem 1.5rem;
 				display: flex;
 				align-items: center;
 				gap: 0.75rem;
 			}
+			.form-header.green {
+				background: var(--green-dark);
+			}
+			.form-header.gold {
+				background: #7a4a0d;
+			}
+			.form-header.red {
+				background: #6b1f1f;
+			}
 			.form-header-icon {
 				width: 32px;
 				height: 32px;
-				background: var(--green-mid);
 				border-radius: 50%;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				font-size: 1rem;
+			}
+			.form-header.green .form-header-icon {
+				background: var(--green-mid);
+			}
+			.form-header.gold .form-header-icon {
+				background: var(--gold);
+			}
+			.form-header.red .form-header-icon {
+				background: var(--red);
 			}
 			.form-header-text h3 {
 				font-family: "Playfair Display", serif;
@@ -265,7 +331,7 @@
 				margin-bottom: 1rem;
 			}
 			.form-group label {
-				display: block;
+				display: flex;
 				font-size: 0.78rem;
 				font-weight: 600;
 				text-transform: uppercase;
@@ -274,7 +340,8 @@
 				margin-bottom: 0.4rem;
 			}
 			.form-group input,
-			.form-group select {
+			.form-group select,
+			.form-group textarea {
 				width: 100%;
 				padding: 0.65rem 0.9rem;
 				border: 1px solid var(--border);
@@ -289,6 +356,20 @@
 				appearance: none;
 				-webkit-appearance: none;
 			}
+			.form-group input[type="checkbox"],
+			.form-group input[type="radio"] {
+				appearance: auto;
+				-webkit-appearance: auto;
+				width: auto;
+				padding: 0 !important;
+				border: none !important;
+				background: none !important;
+				accent-color: var(--green-mid) !important;
+			}
+			.form-group textarea {
+				resize: vertical;
+				min-height: 80px;
+			}
 			.form-group select {
 				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7a6e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 				background-repeat: no-repeat;
@@ -296,11 +377,12 @@
 				padding-right: 2.2rem;
 			}
 			.form-group input:focus,
-			.form-group select:focus {
-				outline: none;
-				border-color: var(--green-mid);
-				box-shadow: 0 0 0 3px rgba(46, 160, 106, 0.12);
-				background: var(--white);
+			.form-group select:focus,
+			.form-group textarea:focus {
+				outline: none !important;
+				border-color: var(--green-mid) !important;
+				box-shadow: 0 0 0 3px rgba(46, 160, 106, 0.12) !important;
+				background: var(--white) !important;
 			}
 			.checkbox-group {
 				display: flex;
@@ -308,24 +390,62 @@
 				gap: 0.5rem;
 			}
 			.checkbox-item {
-				display: flex !important;
-				align-items: center !important;
-				gap: 0.6rem !important;
-				font-size: 0.85rem !important;
-				color: var(--ink-mid) !important;
-				cursor: pointer !important;
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-size: 0.85rem;
+				color: var(--ink-mid);
+				cursor: pointer;
 			}
 			.checkbox-item input[type="checkbox"] {
-				width: 16px !important;
-				height: 16px !important;
-				accent-color: var(--green-mid) !important;
-				cursor: pointer !important;
-				flex-shrink: 0 !important;
+				width: 16px;
+				height: 16px;
+				border: 1px solid #999;
+				border-radius: 3px;
+				/* accent-color: var(--green-mid); */
+				cursor: pointer;
+				flex-shrink: 0;
+
+				/* transform: none; */
+				/* appearance: checkbox;
+				-webkit-appearance: checkbox; */
 			}
+      input[type="checkbox"]:checked {
+  background: var(--green-mid);
+  border-color: var(--green-mid);
+}
+			/* .checkbox-item input[type="checkbox"] {
+				pointer-events: none;
+			} */
+			.radio-group {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+			.radio-item {
+				display: flex !important;
+				align-items: center !important;
+				gap: 0.6rem;
+				font-size: 0.85rem;
+				color: var(--ink-mid);
+				cursor: pointer;
+			}
+			.radio-item input[type="radio"] {
+				width: 16px;
+				height: 16px;
+				/* accent-color: var(--green-mid); */
+				cursor: pointer;
+				flex-shrink: 0;
+
+				/* transform: none; */
+				/* appearance: radio;
+				-webkit-appearance: radio; */
+			}
+
+			/* ── BUTTONS ── */
 			.submit-btn {
 				width: 100%;
 				padding: 0.9rem;
-				background: var(--green-mid);
 				color: var(--white);
 				border: none;
 				border-radius: 4px;
@@ -339,15 +459,34 @@
 				letter-spacing: 0.02em;
 				margin-top: 0.5rem;
 			}
-			.submit-btn:hover {
+			.submit-btn.green {
+				background: var(--green-mid);
+			}
+			.submit-btn.green:hover {
 				background: var(--green);
 				transform: translateY(-1px);
 			}
-			.submit-btn:disabled {
-				background: var(--border);
-				cursor: not-allowed;
-				transform: none;
+			.submit-btn.gold {
+				background: var(--gold);
 			}
+			.submit-btn.gold:hover {
+				background: #a87620;
+				transform: translateY(-1px);
+			}
+			.submit-btn.red {
+				background: var(--red);
+			}
+			.submit-btn.red:hover {
+				background: #8c2e24;
+				transform: translateY(-1px);
+			}
+			.submit-btn:disabled {
+				background: var(--border) !important;
+				cursor: not-allowed;
+				transform: none !important;
+			}
+
+			/* ── MESSAGES ── */
 			.form-msg {
 				padding: 0.7rem 1rem;
 				border-radius: 4px;
@@ -374,48 +513,17 @@
 				border-left: 4px solid var(--gold);
 				display: block;
 			}
-			.form-msg.show {
-				display: block;
-			}
-
-			.admin-override-section {
-				margin-top: 1rem;
-				padding-top: 1rem;
-				border-top: 1px dashed var(--border);
-			}
-			.admin-link {
-				font-size: 0.7rem;
-				color: var(--ink-light);
-				cursor: pointer;
-				text-decoration: underline;
-				text-align: center;
-				display: inline-block;
-				width: 100%;
-			}
-			.admin-panel {
-				background: #f9f9f7;
-				border-radius: 8px;
-				padding: 0.8rem;
-				margin-top: 0.8rem;
+			.duplicate-warning {
+				background: #fff3cd;
+				border-left: 4px solid #ffc107;
+				padding: 0.5rem 1rem;
+				margin-bottom: 1rem;
+				border-radius: 6px;
+				font-size: 0.8rem;
 				display: none;
 			}
-			.admin-panel input {
-				width: 70%;
-				padding: 0.5rem;
-				font-size: 0.8rem;
-				border-radius: 6px;
-				border: 1px solid var(--border);
-				margin-bottom: 10px;
-			}
-			.admin-panel button {
-				background: var(--gold);
-				border: none;
-				padding: 0.5rem 1rem;
-				border-radius: 6px;
-				font-weight: 600;
-				cursor: pointer;
-				/* margin-left: 0.5rem; */
-			}
+
+			/* ── DASHBOARD PANEL ── */
 			.dashboard-panel {
 				background: var(--white);
 				border: 1px solid var(--border);
@@ -463,6 +571,7 @@
 				}
 			}
 
+			/* ── STATE LIST ── */
 			.state-list {
 				max-height: 360px;
 				overflow-y: auto;
@@ -474,11 +583,6 @@
 				border-bottom: 1px solid var(--border);
 				gap: 1rem;
 				transition: background 0.15s;
-			}
-			.state-name {
-				min-width: 100px;
-				font-weight: 500;
-				font-size: 0.85rem;
 			}
 			.state-row:hover {
 				background: var(--surface);
@@ -500,9 +604,14 @@
 			}
 			.state-bar {
 				height: 100%;
-				background: linear-gradient(90deg, var(--green-mid), var(--green));
 				border-radius: 4px;
 				transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+			}
+			.state-bar.green {
+				background: linear-gradient(90deg, var(--green-mid), var(--green));
+			}
+			.state-bar.gold {
+				background: linear-gradient(90deg, var(--gold), #a87620);
 			}
 			.state-count {
 				font-family: "DM Mono", monospace;
@@ -512,22 +621,18 @@
 				min-width: 28px;
 				text-align: right;
 			}
-			.empty-state {
-				padding: 3rem 1.5rem;
-				text-align: center;
-				color: var(--ink-light);
-				font-size: 0.85rem;
-				line-height: 1.8;
+			.state-list::-webkit-scrollbar {
+				width: 4px;
 			}
-			.empty-state .big-icon {
-				font-size: 2.5rem;
-				margin-bottom: 0.8rem;
-				opacity: 0.4;
+			.state-list::-webkit-scrollbar-track {
+				background: transparent;
+			}
+			.state-list::-webkit-scrollbar-thumb {
+				background: var(--border);
+				border-radius: 4px;
 			}
 
-			.full-width {
-				margin-bottom: 3rem;
-			}
+			/* ── PVC GRID ── */
 			.pvc-grid {
 				display: grid;
 				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -551,6 +656,9 @@
 				height: 3px;
 				background: var(--green-mid);
 			}
+			.pvc-card.alert::before {
+				background: var(--red);
+			}
 			.pvc-state {
 				font-size: 0.72rem;
 				text-transform: uppercase;
@@ -571,7 +679,7 @@
 				font-size: 0.75rem;
 				color: var(--ink-light);
 			}
-			.pvc-pill {
+			.badge {
 				display: inline-block;
 				padding: 2px 8px;
 				border-radius: 20px;
@@ -579,19 +687,413 @@
 				font-weight: 600;
 				margin-top: 0.5rem;
 			}
-			.pvc-yes {
+			.badge-yes {
 				background: var(--green-light);
 				color: var(--green-dark);
 			}
-			.pvc-no {
+			.badge-no {
 				background: #fef2f0;
 				color: var(--red);
 			}
-			.pvc-processing {
+			.badge-processing {
 				background: var(--gold-light);
 				color: var(--gold);
 			}
+			.badge-alert {
+				background: #fef2f0;
+				color: var(--red);
+			}
 
+			/* ── DISPLACEMENT SECTION ── */
+			.displacement-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: 1rem;
+				margin-top: 1.5rem;
+			}
+			.displacement-card {
+				background: var(--white);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem 1.2rem;
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+			}
+			.displacement-count {
+				font-family: "Playfair Display", serif;
+				font-size: 2rem;
+				font-weight: 700;
+				color: var(--red);
+				min-width: 60px;
+			}
+			.displacement-detail {
+				flex: 1;
+			}
+			.displacement-title {
+				font-size: 0.82rem;
+				font-weight: 600;
+				color: var(--ink);
+				margin-bottom: 0.2rem;
+			}
+			.displacement-sub {
+				font-size: 0.72rem;
+				color: var(--ink-light);
+				line-height: 1.5;
+			}
+			.displacement-arrow {
+				font-size: 0.75rem;
+				color: var(--red);
+				font-weight: 600;
+			}
+			.insight-banner {
+				background: linear-gradient(135deg, #fdf3e3, #fff8f0);
+				border: 1px solid #e8c88a;
+				border-radius: 8px;
+				padding: 1.2rem 1.5rem;
+				display: flex;
+				gap: 1rem;
+				align-items: flex-start;
+				margin-bottom: 1.5rem;
+			}
+			.insight-icon {
+				font-size: 1.5rem;
+				flex-shrink: 0;
+			}
+			.insight-text {
+				font-size: 0.85rem;
+				color: #7a4a0d;
+				line-height: 1.7;
+			}
+			.insight-text strong {
+				font-weight: 600;
+			}
+
+			/* ── CHANNEL BREAKDOWN ── */
+			.channel-grid {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 1rem;
+				margin-top: 1rem;
+			}
+			.channel-card {
+				background: var(--white);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem;
+				text-align: center;
+			}
+			.channel-pct {
+				font-family: "Playfair Display", serif;
+				font-size: 1.6rem;
+				font-weight: 700;
+				color: var(--green);
+			}
+			.channel-label {
+				font-size: 0.72rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--ink-light);
+				font-weight: 500;
+				margin-top: 0.3rem;
+			}
+
+			/* ── INCIDENT REPORT SECTION ── */
+			.incident-type-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 0.6rem;
+			}
+			.incident-type-btn {
+				padding: 0.6rem;
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				background: var(--surface);
+				font-size: 0.78rem;
+				font-weight: 500;
+				cursor: pointer;
+				text-align: center;
+				transition:
+					border-color 0.2s,
+					background 0.2s;
+				color: var(--ink-mid);
+			}
+			.incident-type-btn:hover {
+				border-color: var(--red);
+			}
+			.incident-type-btn.selected {
+				border-color: var(--red);
+				background: var(--red-light);
+				color: var(--red);
+				font-weight: 600;
+			}
+			.severity-bar {
+				display: flex;
+				gap: 0.5rem;
+			}
+			.severity-btn {
+				flex: 1;
+				padding: 0.5rem;
+				border: 1px solid var(--border);
+				border-radius: 4px;
+				font-size: 0.78rem;
+				font-weight: 500;
+				cursor: pointer;
+				text-align: center;
+				background: var(--surface);
+				transition: all 0.15s;
+				color: var(--ink-mid);
+			}
+			.severity-btn.s1.selected {
+				background: var(--green-light);
+				border-color: var(--green);
+				color: var(--green-dark);
+			}
+			.severity-btn.s2.selected {
+				background: var(--gold-light);
+				border-color: var(--gold);
+				color: #7a4a0d;
+			}
+			.severity-btn.s3.selected {
+				background: var(--red-light);
+				border-color: var(--red);
+				color: var(--red);
+			}
+
+			/* ── ADMIN / SUBMISSIONS TABLE ── */
+			.admin-gate {
+				background: var(--white);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 2rem;
+				text-align: center;
+			}
+			.admin-gate h4 {
+				font-family: "Playfair Display", serif;
+				font-size: 1.1rem;
+				margin-bottom: 0.5rem;
+			}
+			.admin-gate p {
+				font-size: 0.82rem;
+				color: var(--ink-light);
+				margin-bottom: 1.2rem;
+			}
+			.admin-gate-row {
+				display: flex;
+				gap: 0.8rem;
+				justify-content: center;
+				max-width: 360px;
+				margin: 0 auto;
+			}
+			.admin-gate-row input {
+				flex: 1;
+				padding: 0.6rem 1rem;
+				border: 1px solid var(--border);
+				border-radius: 4px;
+				font-size: 0.88rem;
+				font-family: "DM Sans", sans-serif;
+			}
+			.admin-gate-row button {
+				padding: 0.6rem 1.2rem;
+				background: var(--green-mid);
+				color: white;
+				border: none;
+				border-radius: 4px;
+				font-weight: 600;
+				cursor: pointer;
+				font-size: 0.85rem;
+			}
+			.submissions-table {
+				width: 100%;
+				border-collapse: collapse;
+				font-size: 0.8rem;
+			}
+			.submissions-table th {
+				text-align: left;
+				padding: 0.6rem 0.8rem;
+				font-size: 0.7rem;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.07em;
+				color: var(--ink-light);
+				border-bottom: 1px solid var(--border);
+				background: var(--surface);
+			}
+			.submissions-table td {
+				padding: 0.65rem 0.8rem;
+				border-bottom: 1px solid var(--border);
+				color: var(--ink-mid);
+				vertical-align: middle;
+			}
+			.submissions-table tr:last-child td {
+				border-bottom: none;
+			}
+			.submissions-table tr:hover td {
+				background: var(--surface);
+			}
+			.time-ago {
+				font-family: "DM Mono", monospace;
+				font-size: 0.72rem;
+				color: var(--ink-light);
+			}
+
+			/* ── INCIDENT LOG ── */
+			.incident-row {
+				display: flex;
+				gap: 1rem;
+				padding: 0.8rem 1.2rem;
+				border-bottom: 1px solid var(--border);
+				align-items: flex-start;
+			}
+			.incident-row:last-child {
+				border-bottom: none;
+			}
+			.incident-dot {
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				flex-shrink: 0;
+				margin-top: 4px;
+			}
+			.incident-dot.s1 {
+				background: var(--green-mid);
+			}
+			.incident-dot.s2 {
+				background: var(--gold);
+			}
+			.incident-dot.s3 {
+				background: var(--red);
+			}
+			.incident-body {
+				flex: 1;
+			}
+			.incident-type-label {
+				font-size: 0.75rem;
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				color: var(--ink-mid);
+				margin-bottom: 0.2rem;
+			}
+			.incident-desc {
+				font-size: 0.82rem;
+				color: var(--ink);
+				line-height: 1.5;
+				margin-bottom: 0.3rem;
+			}
+			.incident-meta {
+				font-size: 0.72rem;
+				color: var(--ink-light);
+			}
+
+			/* ── VOLUNTEER STATS ── */
+			.vol-stats {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1rem;
+				margin-bottom: 1.5rem;
+			}
+			.vol-stat {
+				background: var(--white);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1rem;
+				text-align: center;
+			}
+			.vol-stat-num {
+				font-family: "Playfair Display", serif;
+				font-size: 1.6rem;
+				font-weight: 700;
+				color: var(--gold);
+			}
+			.vol-stat-label {
+				font-size: 0.7rem;
+				text-transform: uppercase;
+				letter-spacing: 0.07em;
+				color: var(--ink-light);
+				font-weight: 500;
+				margin-top: 0.3rem;
+			}
+
+			/* ── TEAM PICKER ── */
+			.team-picker-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1rem;
+				margin-top: 1.5rem;
+				margin-bottom: 2rem;
+			}
+			.team-card {
+				background: var(--white);
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				padding: 1.2rem;
+				cursor: pointer;
+				display: flex;
+				align-items: flex-start;
+				gap: 1rem;
+				transition:
+					border-color 0.2s,
+					box-shadow 0.2s,
+					transform 0.15s;
+			}
+			.team-card:hover {
+				border-color: var(--gold);
+				box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+				transform: translateY(-2px);
+			}
+			.team-card.selected {
+				border-color: var(--gold);
+				background: var(--gold-light);
+			}
+			.team-card-icon {
+				font-size: 1.8rem;
+				flex-shrink: 0;
+				line-height: 1;
+			}
+			.team-card-body {
+				flex: 1;
+			}
+			.team-card-name {
+				font-weight: 700;
+				font-size: 0.88rem;
+				color: var(--ink);
+				margin-bottom: 0.3rem;
+			}
+			.team-card-desc {
+				font-size: 0.78rem;
+				color: var(--ink-light);
+				line-height: 1.5;
+				margin-bottom: 0.4rem;
+			}
+			.team-card-skills {
+				font-size: 0.7rem;
+				font-weight: 600;
+				color: var(--gold);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+			}
+			.team-card-arrow {
+				color: var(--ink-light);
+				font-size: 1rem;
+				flex-shrink: 0;
+				align-self: center;
+			}
+			.team-card:hover .team-card-arrow {
+				color: var(--gold);
+			}
+			@media (max-width: 768px) {
+				.team-picker-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+			@media (min-width: 769px) and (max-width: 1024px) {
+				.team-picker-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+
+			/* ── OUTREACH ── */
 			.outreach-grid {
 				display: grid;
 				grid-template-columns: repeat(3, 1fr);
@@ -648,58 +1150,47 @@
 				color: var(--green);
 				text-decoration: underline;
 			}
-			.submissions-table {
-				width: 100%;
-				border-collapse: collapse;
-				font-size: 0.8rem;
+
+			/* ── ADMIN HELPER ── */
+			.admin-override-section {
+				margin-top: 1rem;
+				padding-top: 1rem;
+				border-top: 1px dashed var(--border);
 			}
-			.submissions-table th {
-				text-align: left;
-				padding: 0.6rem 0.8rem;
+			.admin-link {
 				font-size: 0.7rem;
-				font-weight: 600;
-				text-transform: uppercase;
-				letter-spacing: 0.07em;
 				color: var(--ink-light);
-				border-bottom: 1px solid var(--border);
-				background: var(--surface);
-			}
-			.submissions-table td {
-				padding: 0.65rem 0.8rem;
-				border-bottom: 1px solid var(--border);
-				color: var(--ink-mid);
-				vertical-align: middle;
-			}
-			.submissions-table tr:last-child td {
-				border-bottom: none;
-			}
-			.submissions-table tr:hover td {
-				background: var(--surface);
-			}
-			.badge {
+				cursor: pointer;
+				text-decoration: underline;
+				text-align: center;
 				display: inline-block;
-				padding: 2px 8px;
-				border-radius: 20px;
-				font-size: 0.68rem;
+				width: 100%;
+			}
+			.admin-panel {
+				background: #f9f9f7;
+				border-radius: 8px;
+				padding: 0.8rem;
+				margin-top: 0.8rem;
+				display: none;
+			}
+			.admin-panel input {
+				width: 70%;
+				padding: 0.5rem;
+				font-size: 0.8rem;
+				border-radius: 6px;
+				border: 1px solid var(--border);
+				margin-bottom: 10px;
+			}
+			.admin-panel button {
+				background: var(--gold);
+				border: none;
+				padding: 0.5rem 1rem;
+				border-radius: 6px;
 				font-weight: 600;
+				cursor: pointer;
 			}
-			.badge-yes {
-				background: var(--green-light);
-				color: var(--green-dark);
-			}
-			.badge-no {
-				background: #fef2f0;
-				color: var(--red);
-			}
-			.badge-processing {
-				background: var(--gold-light);
-				color: var(--gold);
-			}
-			.time-ago {
-				font-family: "DM Mono", monospace;
-				font-size: 0.72rem;
-				color: var(--ink-light);
-			}
+
+			/* ── FOOTER ── */
 			footer {
 				background: var(--ink);
 				color: rgba(255, 255, 255, 0.4);
@@ -712,290 +1203,1500 @@
 			footer strong {
 				color: rgba(255, 255, 255, 0.7);
 			}
-			.state-list::-webkit-scrollbar {
-				width: 4px;
+
+			/* ── TABS ── */
+			.tab-content {
+				display: none;
 			}
-			.state-list::-webkit-scrollbar-track {
-				background: transparent;
-			}
-			.state-list::-webkit-scrollbar-thumb {
-				background: var(--border);
-				border-radius: 4px;
+			.tab-content.active {
+				display: block;
 			}
 
+			/* ── ANIMATIONS ── */
 			@keyframes spin {
 				to {
 					transform: rotate(360deg);
 				}
 			}
-			.spinner {
-				display: inline-block;
-				width: 14px;
-				height: 14px;
-				border: 2px solid rgba(255, 255, 255, 0.3);
-				border-top-color: white;
-				border-radius: 50%;
-				animation: spin 0.6s linear infinite;
-				vertical-align: middle;
-				margin-right: 6px;
+			@keyframes pulse {
+				0%,
+				100% {
+					opacity: 1;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 0.5;
+					transform: scale(0.8);
+				}
 			}
 
-			.firebase-status {
-				font-size: 0.72rem;
-				padding: 4px 10px;
-				border-radius: 20px;
-				font-weight: 600;
-			}
-			.firebase-status.ok {
-				background: var(--green-light);
-				color: var(--green-dark);
-			}
-			.firebase-status.err {
-				background: #fef2f0;
-				color: var(--red);
-			}
-			.firebase-status.loading {
-				background: var(--gold-light);
-				color: var(--gold);
-			}
-			.duplicate-warning {
-				background: #fff3cd;
-				border-left: 4px solid #ffc107;
-				padding: 0.5rem 1rem;
-				margin-bottom: 1rem;
-				border-radius: 6px;
-				font-size: 0.8rem;
-				display: none;
-			}
+			/* ── RESPONSIVE ── */
 			@media (max-width: 768px) {
-				.two-col {
+				.two-col,
+				.outreach-grid,
+				.channel-grid,
+				.vol-stats {
 					grid-template-columns: 1fr;
 				}
 				.stats-bar {
-					grid-template-columns: repeat(2, 1fr);
+					grid-template-columns: repeat(3, 1fr);
 				}
-				.outreach-grid {
-					grid-template-columns: 1fr;
+				.stat-item:nth-child(n + 4) {
+					border-top: 1px solid var(--border);
 				}
-				.pvc-grid {
+				.pvc-grid,
+				.displacement-grid {
 					grid-template-columns: repeat(2, 1fr);
 				}
 				.nav-links {
 					display: none;
 				}
+				.incident-type-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+			@media (max-width: 480px) {
+				.stats-bar {
+					grid-template-columns: repeat(2, 1fr);
+				}
 			}
 		</style>
 	</head>
 	<body>
-		<!-- Config check banner -->
-		<!-- <div class="config-banner" id="config-banner">
-			⚠️ <strong>Setup required:</strong> Open this file in a text editor and
-			paste your Firebase config values into the
-			<code>FIREBASE_CONFIG</code> object at the top of the &lt;script&gt; tag.
-			See the comments for instructions.
-		</div> -->
 		<header>
 			<div class="logo">PVC<span>Watch</span></div>
 			<nav class="nav-links">
-				<a href="#register">Register</a>
-				<a href="#dashboard">Dashboard</a>
-				<a href="#outreach">Outreach</a>
+				<a href="#" onclick="switchTab('voters')">Voters</a>
+				<a href="#" onclick="switchTab('volunteer')">Volunteer</a>
+				<a href="#" onclick="switchTab('incidents')">Report Incident</a>
+				<a href="#" onclick="switchTab('insights')">Insights</a>
+				<a href="#" onclick="switchTab('outreach')">Outreach</a>
+				<a href="#" onclick="switchTab('admin')">Admin</a>
 			</nav>
 			<div id="fb-status" class="firebase-status loading">Connecting…</div>
 		</header>
+
 		<section class="hero">
-			<p class="hero-eyebrow">Nigeria 2027 — Voter Tracker Initiative</p>
-			<h1>Your Vote. <em>Your Power.</em><br />One Person, One Entry.</h1>
-			<p>
-				Track new voters across all 36 states. Register, report your PVC status,
-				and help the Obidient movement prepare for 2027.
+			<p class="hero-eyebrow">
+				Nigeria 2027 — Obidient Movement Operations Hub
 			</p>
-			<a href="#register" class="hero-cta">Register Your PVC Status ↓</a>
+			<h1>Your Vote. <em>Your Power.</em><br />Every Unit. Every Ward.</h1>
+			<p>
+				Register your PVC status, volunteer for Field Watch, report election
+				incidents, and help the movement prepare for 2027.
+			</p>
+			<a href="#" onclick="switchTab('voters')" class="hero-cta"
+				>Register Your PVC Status ↓</a
+			>
 		</section>
+
 		<div class="stats-bar">
 			<div class="stat-item">
 				<div class="stat-num" id="total-registered">—</div>
-				<div class="stat-label">Total Registered</div>
+				<div class="stat-label">Voters Registered</div>
 			</div>
 			<div class="stat-item">
 				<div class="stat-num" id="total-pvc">—</div>
 				<div class="stat-label">Have PVC</div>
 			</div>
 			<div class="stat-item">
-				<div class="stat-num" id="total-states">—</div>
-				<div class="stat-label">States Reached</div>
+				<div class="stat-num" id="total-displaced">—</div>
+				<div class="stat-label">Cross-State Voters</div>
 			</div>
 			<div class="stat-item">
-				<div class="stat-num" id="today-count">—</div>
-				<div class="stat-label">Registered Today</div>
+				<div class="stat-num" id="total-volunteers">—</div>
+				<div class="stat-label">Volunteers</div>
+			</div>
+			<div class="stat-item">
+				<div class="stat-num" id="total-incidents">—</div>
+				<div class="stat-label">Incidents Logged</div>
 			</div>
 		</div>
+
+		<!-- TAB BAR -->
+		<div class="tab-bar">
+			<button
+				class="tab-btn active"
+				onclick="switchTab('voters')"
+				id="tab-voters"
+			>
+				🗳️ Voter Registry
+			</button>
+			<button
+				class="tab-btn"
+				onclick="switchTab('volunteer')"
+				id="tab-volunteer"
+			>
+				🙋 Volunteer Signup
+			</button>
+			<button
+				class="tab-btn"
+				onclick="switchTab('incidents')"
+				id="tab-incidents"
+			>
+				⚠️ Report Incident
+			</button>
+			<button class="tab-btn" onclick="switchTab('insights')" id="tab-insights">
+				📊 Insights
+			</button>
+			<button class="tab-btn" onclick="switchTab('outreach')" id="tab-outreach">
+				📢 Outreach
+			</button>
+			<button class="tab-btn" onclick="switchTab('admin')" id="tab-admin">
+				🔒 Admin
+			</button>
+		</div>
+
 		<main class="main">
-			<div class="two-col" id="register">
-				<div class="form-panel">
-					<div class="form-header">
-						<div class="form-header-icon">✓</div>
-						<div class="form-header-text">
-							<h3>Voter Registration Form</h3>
-							<p>Submit once · Takes 60 seconds</p>
-						</div>
-					</div>
-					<div class="form-body">
-						<div id="duplicate-warning" class="duplicate-warning"></div>
-						<div class="form-group">
-							<label>First Name</label>
-							<input
-								type="text"
-								id="fname"
-								placeholder="e.g. Izu"
-								autocomplete="given-name"
-							/>
-						</div>
-						<div class="form-group">
-							<label>State of Residence (Current)</label>
-							<select id="state-select">
-								<option value="">— Select your state —</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label>State of Registration (PVC)</label>
-							<select id="reg-state-select">
-								<option value="">— Select state on your PVC —</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label>Year you turned 18 (or first registered)</label>
-							<select id="year-select">
-								<option value="">— Select year —</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label>PVC Status</label>
-							<select id="pvc-status">
-								<option value="">— Select status —</option>
-								<option value="yes">✅ I have my PVC</option>
-								<option value="no">❌ I don't have a PVC yet</option>
-								<option value="processing">⏳ Application in progress</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label>How did you hear about us?</label>
-							<div class="checkbox-group">
-								<label class="checkbox-item"
-									><input type="checkbox" name="channel" value="whatsapp" />
-									WhatsApp</label
-								><label class="checkbox-item"
-									><input type="checkbox" name="channel" value="twitter" />
-									X/Twitter</label
-								><label class="checkbox-item"
-									><input type="checkbox" name="channel" value="friend" />
-									Friend/Family</label
-								><label class="checkbox-item"
-									><input type="checkbox" name="channel" value="community" />
-									Community / church / mosque</label
-								>
+			<!-- ══════════════════════════════════════
+       TAB 1: VOTER REGISTRY
+  ══════════════════════════════════════ -->
+			<div class="tab-content active" id="tab-content-voters">
+				<div class="two-col" id="register">
+					<div class="form-panel">
+						<div class="form-header green">
+							<div class="form-header-icon">✓</div>
+							<div class="form-header-text">
+								<h3>Voter Registration Form</h3>
+								<p>Submit once · Takes 60 seconds</p>
 							</div>
 						</div>
-						<button class="submit-btn" id="submit-btn" onclick="submitForm()">
-							Submit My Registration
-						</button>
-						<div class="form-msg" id="form-msg"></div>
-						<div class="admin-override-section">
-							<span class="admin-link" id="toggleAdminBtn"
-								>🔐 Authorized helper? Click here to assist with override
-								code</span
-							>
-							<div class="admin-panel" id="adminPanel">
+						<div class="form-body">
+							<div id="duplicate-warning" class="duplicate-warning"></div>
+							<div class="form-group">
+								<label>First Name</label>
 								<input
 									type="text"
-									id="adminCode"
-									placeholder="Enter assistant override code"
-									autocomplete="off"
+									id="fname"
+									placeholder="e.g. Izu"
+									autocomplete="given-name"
 								/>
-								<button id="unlockHelperBtn">
-									Unlock & Submit for someone
-								</button>
-								<div
-									id="helperStatus"
-									style="font-size: 0.7rem; margin-top: 8px"
-								></div>
 							</div>
-						</div>
-					</div>
-				</div>
-				<div id="dashboard">
-					<div class="dashboard-panel">
-						<div class="dash-header">
-							<div class="dash-title">New Voters by State</div>
-							<div class="live-badge"><span class="live-dot"></span> Live</div>
-						</div>
-						<div class="state-list" id="state-list">
-							<div
-								class="empty-state"
-								style="padding: 2rem; text-align: center"
+							<div class="form-group">
+								<label>State of Residence (Current)</label>
+								<select id="state-select">
+									<option value="">— Select your state —</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label>State of Registration (PVC)</label>
+								<select id="reg-state-select">
+									<option value="">— Select state on your PVC —</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label>Year you turned 18 (or first registered)</label>
+								<select id="year-select">
+									<option value="">— Select year —</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label>PVC Status</label>
+								<select id="pvc-status">
+									<option value="">— Select status —</option>
+									<option value="yes">✅ I have my PVC</option>
+									<option value="no">❌ I don't have a PVC yet</option>
+									<option value="processing">⏳ Application in progress</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label>How did you hear about us?</label>
+								<div class="checkbox-group">
+									<label class="checkbox-item"
+										><input type="checkbox" name="channel" value="whatsapp" />
+										WhatsApp</label
+									>
+									<label class="checkbox-item"
+										><input type="checkbox" name="channel" value="twitter" />
+										X/Twitter</label
+									>
+									<label class="checkbox-item"
+										><input type="checkbox" name="channel" value="friend" />
+										Friend/Family</label
+									>
+									<label class="checkbox-item"
+										><input type="checkbox" name="channel" value="community" />
+										Community / church / mosque</label
+									>
+								</div>
+							</div>
+							<button
+								class="submit-btn green"
+								id="submit-btn"
+								onclick="submitVoterForm()"
 							>
-								<div class="big-icon">🔄</div>
-								Loading data...
+								Submit My Registration
+							</button>
+							<div class="form-msg" id="form-msg"></div>
+							<div class="admin-override-section">
+								<span class="admin-link" id="toggleAdminBtn"
+									>🔐 Authorized helper? Click here to assist with override
+									code</span
+								>
+								<div class="admin-panel" id="adminPanel">
+									<input
+										type="text"
+										id="adminCode"
+										placeholder="Enter assistant override code"
+										autocomplete="off"
+									/>
+									<button id="unlockHelperBtn">
+										Unlock &amp; Submit for someone
+									</button>
+									<div
+										id="helperStatus"
+										style="font-size: 0.7rem; margin-top: 8px"
+									></div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-			<div class="full-width">
-				<div class="section-title">PVC Collection Tracker</div>
-				<div class="section-sub">
-					Real-time breakdown of PVC status by state. This helps identify areas
-					with high voter engagement and those needing more outreach.
-				</div>
-				<div class="pvc-grid" id="pvc-grid">
-					<div
-						style="
-							grid-column: 1/-1;
-							text-align: center;
-							color: var(--ink-light);
-							padding: 2rem;
-							font-size: 0.85rem;
-						"
-					>
-						Loading insights…
-					</div>
-				</div>
-			</div>
-			<div class="full-width">
-				<div class="section-title">Recent Submissions</div>
-				<div class="section-sub">
-					Latest verified entries — names partially anonymised for privacy
-				</div>
-				<div class="dashboard-panel" style="overflow: hidden; overflow-x: auto">
-					<table class="submissions-table">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Residence</th>
-								<th>PVC State</th>
-								<th>Status</th>
-								<th>Source</th>
-								<th>Time</th>
-							</tr>
-						</thead>
-						<tbody id="submissions-body">
-							<tr>
-								<td
-									colspan="6"
+					<div id="dashboard">
+						<div class="dashboard-panel">
+							<div class="dash-header">
+								<div class="dash-title">New Voters by State</div>
+								<div class="live-badge">
+									<span class="live-dot"></span> Live
+								</div>
+							</div>
+							<div class="state-list" id="state-list">
+								<div
 									style="
-										text-align: center;
 										padding: 2rem;
+										text-align: center;
 										color: var(--ink-light);
 									"
 								>
-									Awaiting data…
-								</td>
-							</tr>
-						</tbody>
-					</table>
+									🔄 Loading data...
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="full-width">
+					<div class="section-title">PVC Collection Tracker</div>
+					<div class="section-sub">
+						Real-time breakdown of PVC status by registration state. Cards in
+						red have low collection rates — priority outreach targets.
+					</div>
+					<div class="pvc-grid" id="pvc-grid">
+						<div
+							style="
+								grid-column: 1/-1;
+								text-align: center;
+								color: var(--ink-light);
+								padding: 2rem;
+								font-size: 0.85rem;
+							"
+						>
+							Loading insights…
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="full-width" id="outreach">
+
+			<!-- ══════════════════════════════════════
+       TAB 2: VOLUNTEER SIGNUP
+  ══════════════════════════════════════ -->
+			<div class="tab-content" id="tab-content-volunteer">
+				<div class="vol-stats">
+					<div class="vol-stat">
+						<div class="vol-stat-num" id="vol-total">—</div>
+						<div class="vol-stat-label">Total Signed Up</div>
+					</div>
+					<div class="vol-stat">
+						<div class="vol-stat-num" id="vol-states">—</div>
+						<div class="vol-stat-label">States Covered</div>
+					</div>
+					<div class="vol-stat">
+						<div class="vol-stat-num" id="vol-target">353,000</div>
+						<div class="vol-stat-label">Field Observers Needed</div>
+					</div>
+				</div>
+
+				<!-- STEP 1: TEAM PICKER -->
+				<div id="vol-team-picker">
+					<div class="section-title">Which team do you want to join?</div>
+					<div class="section-sub">
+						The Obidient Movement has six specialised teams. Pick the one that
+						matches your skills. You can only join one team per submission.
+					</div>
+					<div class="team-picker-grid">
+						<div class="team-card" onclick="selectTeam('t1')">
+							<div class="team-card-icon">💻</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 1 · Tech Security</div>
+								<div class="team-card-desc">
+									Audit the ePortal, find vulnerabilities, monitor digital
+									threats on election day.
+								</div>
+								<div class="team-card-skills">
+									Cybersecurity · Backend Dev · Network · Data
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+
+						<div class="team-card" onclick="selectTeam('t2')">
+							<div class="team-card-icon">📊</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 2 · Voter Data</div>
+								<div class="team-card-desc">
+									Build and maintain the voter registry, run outreach surveys,
+									manage state data.
+								</div>
+								<div class="team-card-skills">
+									Fullstack Dev · UX · Data Entry · Statistics
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+
+						<div class="team-card" onclick="selectTeam('t3')">
+							<div class="team-card-icon">🚐</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 3 · PVC Logistics</div>
+								<div class="team-card-desc">
+									Organise PVC collection drives, liaise with INEC, provide
+									transport and elder support.
+								</div>
+								<div class="team-card-skills">
+									Field Coordination · Community Mobilisation · Transport
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+
+						<div class="team-card" onclick="selectTeam('t4')">
+							<div class="team-card-icon">👁️</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 4 · Field Watch</div>
+								<div class="team-card-desc">
+									Deploy to polling units on election day. Observe, document,
+									and respond to irregularities.
+								</div>
+								<div class="team-card-skills">
+									Observer · Coordinator · Responder · Legal Observer
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+
+						<div class="team-card" onclick="selectTeam('t5')">
+							<div class="team-card-icon">📢</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 5 · Civic Education</div>
+								<div class="team-card-desc">
+									Create content, run town halls, translate materials, manage
+									social media and radio.
+								</div>
+								<div class="team-card-skills">
+									Content · Social Media · Radio · Translation · Events
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+
+						<div class="team-card" onclick="selectTeam('t6')">
+							<div class="team-card-icon">⚖️</div>
+							<div class="team-card-body">
+								<div class="team-card-name">Team 6 · Legal & Advocacy</div>
+								<div class="team-card-desc">
+									Litigate violations, lobby for reform, draft tribunal papers,
+									partner with civil society.
+								</div>
+								<div class="team-card-skills">
+									Electoral Law · Advocacy · Paralegal · Policy · NGO
+								</div>
+							</div>
+							<div class="team-card-arrow">→</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- STEP 2: FORM (shown after team selection) -->
+				<div id="vol-form-section" style="display: none">
+					<div class="two-col">
+						<div class="form-panel">
+							<div class="form-header gold" id="vol-form-header">
+								<div class="form-header-icon" id="vol-form-icon">🙋</div>
+								<div class="form-header-text">
+									<h3 id="vol-form-title">Volunteer Form</h3>
+									<p id="vol-form-subtitle">Join the movement</p>
+								</div>
+							</div>
+							<div class="form-body">
+								<button
+									onclick="backToTeamPicker()"
+									style="
+										background: none;
+										border: none;
+										color: var(--ink-light);
+										font-size: 0.78rem;
+										cursor: pointer;
+										margin-bottom: 1rem;
+										padding: 0;
+										text-decoration: underline;
+									"
+								>
+									← Change team
+								</button>
+								<input type="hidden" id="vol-team" />
+
+								<!-- COMMON FIELDS (all teams) -->
+								<div class="form-group">
+									<label>Full Name</label>
+									<input
+										type="text"
+										id="vol-name"
+										placeholder="Your full name"
+									/>
+								</div>
+								<div class="form-group">
+									<label>Phone Number (WhatsApp preferred)</label>
+									<input
+										type="tel"
+										id="vol-phone"
+										placeholder="e.g. 08012345678"
+									/>
+								</div>
+								<div class="form-group">
+									<label>State</label>
+									<select id="vol-state">
+										<option value="">— Select your state —</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Email (optional)</label>
+									<input
+										type="email"
+										id="vol-email"
+										placeholder="For teams 1, 2, 5, 6 — preferred"
+									/>
+								</div>
+
+								<!-- TEAM 1: TECH SECURITY -->
+								<div
+									class="vol-team-fields"
+									id="fields-t1"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>Technical Skills</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-skills"
+													value="cybersecurity"
+												/>
+												Cybersecurity / Penetration Testing</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-skills"
+													value="backend"
+												/>
+												Backend Development</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-skills"
+													value="network"
+												/>
+												Network Engineering</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-skills"
+													value="data-analysis"
+												/>
+												Data Analysis / Anomaly Detection</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-skills"
+													value="devops"
+												/>
+												DevOps / Cloud Infrastructure</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>GitHub / Portfolio URL (optional)</label>
+										<input
+											type="url"
+											id="t1-portfolio"
+											placeholder="https://github.com/yourname"
+										/>
+									</div>
+									<div class="form-group">
+										<label>Availability for pre-election audit work</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-avail"
+													value="weekends"
+												/>
+												Weekends</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-avail"
+													value="evenings"
+												/>
+												Weekday evenings</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-avail"
+													value="fulltime"
+												/>
+												Can commit full-time closer to election</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t1-avail"
+													value="electionday"
+												/>
+												Available on Election Day for live monitoring</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- TEAM 2: VOTER DATA -->
+								<div
+									class="vol-team-fields"
+									id="fields-t2"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>Skills</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t2-skills"
+													value="fullstack"
+												/>
+												Full-Stack Development</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t2-skills" value="ux" />
+												UX / UI Design</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t2-skills"
+													value="data-entry"
+												/>
+												Data Entry / Survey Management</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t2-skills"
+													value="statistics"
+												/>
+												Statistics / Data Science</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t2-skills"
+													value="community-coord"
+												/>
+												Community / Field Coordination</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label
+											>Would you be willing to be a State Coordinator?</label
+										>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input type="radio" name="t2-coord" value="yes" /> Yes
+												— I can coordinate voter data collection in my
+												state</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t2-coord" value="no" /> No —
+												I prefer a supporting role</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Languages spoken (for offline survey work)</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t2-lang"
+													value="english"
+												/>
+												English</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t2-lang" value="hausa" />
+												Hausa</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t2-lang" value="igbo" />
+												Igbo</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t2-lang" value="yoruba" />
+												Yoruba</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t2-lang" value="pidgin" />
+												Nigerian Pidgin</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- TEAM 3: PVC LOGISTICS -->
+								<div
+									class="vol-team-fields"
+									id="fields-t3"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>LGA</label>
+										<input
+											type="text"
+											id="t3-lga"
+											placeholder="Your Local Government Area"
+										/>
+									</div>
+									<div class="form-group">
+										<label
+											>Do you have access to a vehicle for voter
+											transport?</label
+										>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t3-vehicle"
+													value="yes-car"
+												/>
+												Yes — private car</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t3-vehicle"
+													value="yes-bus"
+												/>
+												Yes — bus or larger vehicle</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t3-vehicle" value="no" /> No
+												vehicle, but can assist on foot</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Languages spoken</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t3-lang"
+													value="english"
+												/>
+												English</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t3-lang" value="hausa" />
+												Hausa</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t3-lang" value="igbo" />
+												Igbo</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t3-lang" value="yoruba" />
+												Yoruba</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t3-lang" value="pidgin" />
+												Nigerian Pidgin</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Availability</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t3-avail"
+													value="pvc-drives"
+												/>
+												Available for PVC collection drives
+												(pre-election)</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t3-avail"
+													value="electionday"
+												/>
+												Available on Election Day</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t3-avail"
+													value="elder-support"
+												/>
+												Willing to assist elderly / disabled voters</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- TEAM 4: FIELD WATCH -->
+								<div
+									class="vol-team-fields"
+									id="fields-t4"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>LGA</label>
+										<input
+											type="text"
+											id="t4-lga"
+											placeholder="Your Local Government Area"
+										/>
+									</div>
+									<div class="form-group">
+										<label>Ward (if known)</label>
+										<input
+											type="text"
+											id="t4-ward"
+											placeholder="Your ward name or number"
+										/>
+									</div>
+									<div class="form-group">
+										<label>Role Preference</label>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t4-role"
+													value="observer"
+													checked
+												/>
+												Polling Unit Observer — stationed at one unit all
+												day</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t4-role"
+													value="coordinator"
+												/>
+												Ward Coordinator — supervise ~20 units, relay
+												incidents</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t4-role" value="responder" />
+												Incident Responder — mobile, covers a cluster of
+												units</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t4-role"
+													value="legal-observer"
+												/>
+												Legal Observer — must have legal background, documents
+												violations</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Availability</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t4-avail"
+													value="training"
+												/>
+												Available for pre-election training sessions</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t4-avail"
+													value="electionday"
+												/>
+												Available on Election Day (full day — 7am to
+												close)</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t4-avail"
+													value="collation"
+												/>
+												Available during result collation period</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- TEAM 5: CIVIC EDUCATION -->
+								<div
+									class="vol-team-fields"
+									id="fields-t5"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>Skills</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="content-writing"
+												/>
+												Content Writing / Copywriting</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="graphic-design"
+												/>
+												Graphic Design / Infographics</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="social-media"
+												/>
+												Social Media Management</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="radio"
+												/>
+												Radio / Broadcast / Podcasting</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="events"
+												/>
+												Event / Town Hall Organisation</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-skills"
+													value="translation"
+												/>
+												Translation / Localisation</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Languages you can produce content in</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t5-lang"
+													value="english"
+												/>
+												English</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t5-lang" value="hausa" />
+												Hausa</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t5-lang" value="igbo" />
+												Igbo</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t5-lang" value="yoruba" />
+												Yoruba</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t5-lang" value="pidgin" />
+												Nigerian Pidgin</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label
+											>Can you organise or host a town hall in your
+											community?</label
+										>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input type="radio" name="t5-townhall" value="yes" />
+												Yes</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t5-townhall" value="maybe" />
+												Possibly — need support</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t5-townhall" value="no" /> No
+												— prefer remote/online work</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- TEAM 6: LEGAL & ADVOCACY -->
+								<div
+									class="vol-team-fields"
+									id="fields-t6"
+									style="display: none"
+								>
+									<div class="form-group">
+										<label>Role</label>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-role"
+													value="electoral-lawyer"
+												/>
+												Electoral / Constitutional Lawyer</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t6-role" value="paralegal" />
+												Paralegal / Legal Researcher</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-role"
+													value="legislative-advocate"
+												/>
+												Legislative Advocate (lobbying)</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-role"
+													value="policy-analyst"
+												/>
+												Policy Analyst / White Paper Writer</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-role"
+													value="ngo-liaison"
+												/>
+												NGO / Civil Society / International Liaison</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-role"
+													value="law-student"
+												/>
+												Law Student</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Bar Number (optional — for verification)</label>
+										<input
+											type="text"
+											id="t6-bar"
+											placeholder="Nigerian Bar Association number"
+										/>
+									</div>
+									<div class="form-group">
+										<label>Experience</label>
+										<div class="checkbox-group">
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t6-exp"
+													value="tribunal"
+												/>
+												Tribunal / election litigation experience</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t6-exp"
+													value="human-rights"
+												/>
+												Human rights / civil liberties work</label
+											>
+											<label class="checkbox-item"
+												><input type="checkbox" name="t6-exp" value="policy" />
+												Policy drafting / legislation</label
+											>
+											<label class="checkbox-item"
+												><input
+													type="checkbox"
+													name="t6-exp"
+													value="observer"
+												/>
+												Previous election observation (INEC, AU, ECOWAS)</label
+											>
+										</div>
+									</div>
+									<div class="form-group">
+										<label
+											>Available on Election Day for rapid legal
+											response?</label
+										>
+										<div class="radio-group">
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-avail"
+													value="yes-field"
+												/>
+												Yes — I can be deployed to a zone</label
+											>
+											<label class="radio-item"
+												><input
+													type="radio"
+													name="t6-avail"
+													value="yes-remote"
+												/>
+												Yes — available remotely / by phone</label
+											>
+											<label class="radio-item"
+												><input type="radio" name="t6-avail" value="pre-only" />
+												Pre-election work only</label
+											>
+										</div>
+									</div>
+								</div>
+
+								<!-- SHARED: EXPERIENCE -->
+								<div class="form-group">
+									<label
+										>Any other relevant experience or notes? (optional)</label
+									>
+									<textarea
+										id="vol-experience"
+										placeholder="Anything else we should know…"
+									></textarea>
+								</div>
+
+								<button
+									class="submit-btn gold"
+									id="vol-submit-btn"
+									onclick="submitVolunteerForm()"
+								>
+									Join the Movement
+								</button>
+								<div class="form-msg" id="vol-form-msg"></div>
+								<p
+									style="
+										font-size: 0.72rem;
+										color: var(--ink-light);
+										margin-top: 0.8rem;
+										line-height: 1.6;
+									"
+								>
+									⚠️ Your phone number is used only to add you to your team's
+									WhatsApp coordination group. It is never shared publicly. Your
+									name is known only to your team lead — not listed in any
+									public database.
+								</p>
+							</div>
+						</div>
+
+						<div>
+							<div class="dashboard-panel" style="margin-bottom: 1.5rem">
+								<div class="dash-header">
+									<div class="dash-title">Volunteers by State</div>
+									<div class="live-badge">
+										<span class="live-dot"></span> Live
+									</div>
+								</div>
+								<div class="state-list" id="vol-state-list">
+									<div
+										style="
+											padding: 2rem;
+											text-align: center;
+											color: var(--ink-light);
+										"
+									>
+										🔄 Loading…
+									</div>
+								</div>
+							</div>
+							<div class="dashboard-panel" style="margin-bottom: 1.5rem">
+								<div class="dash-header">
+									<div class="dash-title">Volunteers by Team</div>
+								</div>
+								<div style="padding: 1rem 1.5rem" id="vol-team-breakdown">
+									<div
+										style="
+											color: var(--ink-light);
+											font-size: 0.85rem;
+											text-align: center;
+											padding: 1rem;
+										"
+									>
+										Waiting for data…
+									</div>
+								</div>
+							</div>
+							<div class="dashboard-panel">
+								<div class="dash-header">
+									<div class="dash-title">Field Watch Role Breakdown</div>
+								</div>
+								<div style="padding: 1rem 1.5rem" id="vol-role-breakdown">
+									<div
+										style="
+											color: var(--ink-light);
+											font-size: 0.85rem;
+											text-align: center;
+											padding: 1rem;
+										"
+									>
+										Waiting for data…
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ══════════════════════════════════════
+       TAB 3: REPORT INCIDENT
+  ══════════════════════════════════════ -->
+			<div class="tab-content" id="tab-content-incidents">
+				<div class="two-col">
+					<div class="form-panel">
+						<div class="form-header red">
+							<div class="form-header-icon">⚠️</div>
+							<div class="form-header-text">
+								<h3>Election Incident Report</h3>
+								<p>Anonymous · Timestamped · Sent directly to Legal team</p>
+							</div>
+						</div>
+						<div class="form-body">
+							<div
+								style="
+									background: var(--red-light);
+									border-left: 4px solid var(--red);
+									padding: 0.7rem 1rem;
+									border-radius: 4px;
+									font-size: 0.8rem;
+									color: var(--red);
+									margin-bottom: 1.2rem;
+								"
+							>
+								🔒 This report is <strong>completely anonymous</strong>. No name
+								or device information is stored. Report what you see — your
+								evidence matters.
+							</div>
+
+							<div class="form-group">
+								<label>Incident Type</label>
+								<div class="incident-type-grid" id="incident-type-grid">
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'intimidation')"
+									>
+										😨 Voter Intimidation
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'ballot-stuffing')"
+									>
+										🗳️ Ballot Stuffing
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'result-alteration')"
+									>
+										📝 Result Alteration
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'violence')"
+									>
+										🚨 Violence / Thuggery
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'pvc-denial')"
+									>
+										❌ PVC Denial
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'unit-closure')"
+									>
+										🔒 Polling Unit Closure
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'observer-removal')"
+									>
+										👁️ Observer Removal
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'other')"
+									>
+										📋 Other
+									</button>
+								</div>
+								<input type="hidden" id="incident-type-val" />
+							</div>
+
+							<div class="form-group">
+								<label>Severity</label>
+								<div class="severity-bar">
+									<button
+										class="severity-btn s1"
+										onclick="selectSeverity(this, '1')"
+									>
+										🟢 Low
+									</button>
+									<button
+										class="severity-btn s2"
+										onclick="selectSeverity(this, '2')"
+									>
+										🟡 Moderate
+									</button>
+									<button
+										class="severity-btn s3"
+										onclick="selectSeverity(this, '3')"
+									>
+										🔴 Urgent
+									</button>
+								</div>
+								<input type="hidden" id="incident-severity-val" />
+							</div>
+
+							<div class="form-group">
+								<label>State</label>
+								<select id="incident-state">
+									<option value="">— Select state —</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label>LGA</label>
+								<input
+									type="text"
+									id="incident-lga"
+									placeholder="Local Government Area"
+								/>
+							</div>
+							<div class="form-group">
+								<label>Polling Unit / Ward (if known)</label>
+								<input
+									type="text"
+									id="incident-unit"
+									placeholder="e.g. Ward 5 Unit 003 or school name"
+								/>
+							</div>
+							<div class="form-group">
+								<label>What happened? (describe in detail)</label>
+								<textarea
+									id="incident-desc"
+									placeholder="Describe what you witnessed. Include times, number of people involved, any party affiliations observed, and what happened to affected voters."
+									style="min-height: 120px"
+								></textarea>
+							</div>
+							<div class="form-group">
+								<label>Time of incident (approximate)</label>
+								<input type="time" id="incident-time" />
+							</div>
+							<div class="form-group">
+								<label
+									>Contact for follow-up (optional — for legal team only)</label
+								>
+								<input
+									type="text"
+									id="incident-contact"
+									placeholder="Phone or WhatsApp — never published"
+								/>
+							</div>
+							<button
+								class="submit-btn red"
+								id="incident-submit-btn"
+								onclick="submitIncidentReport()"
+							>
+								Submit Incident Report
+							</button>
+							<div class="form-msg" id="incident-form-msg"></div>
+						</div>
+					</div>
+
+					<div>
+						<div class="dashboard-panel">
+							<div class="dash-header">
+								<div class="dash-title">Live Incident Log</div>
+								<div class="live-badge">
+									<span class="live-dot"></span> Live
+								</div>
+							</div>
+							<div
+								id="incident-log"
+								style="max-height: 500px; overflow-y: auto"
+							>
+								<div
+									style="
+										padding: 2rem;
+										text-align: center;
+										color: var(--ink-light);
+										font-size: 0.85rem;
+									"
+								>
+									No incidents reported yet.
+								</div>
+							</div>
+						</div>
+						<div style="margin-top: 1rem">
+							<div class="dashboard-panel">
+								<div class="dash-header">
+									<div class="dash-title">Incidents by State</div>
+								</div>
+								<div
+									class="state-list"
+									id="incident-state-list"
+									style="max-height: 200px"
+								>
+									<div
+										style="
+											padding: 1.5rem;
+											text-align: center;
+											color: var(--ink-light);
+											font-size: 0.82rem;
+										"
+									>
+										No data yet.
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ══════════════════════════════════════
+       TAB 4: INSIGHTS
+  ══════════════════════════════════════ -->
+			<div class="tab-content" id="tab-content-insights">
+				<div
+					class="insight-banner"
+					id="displacement-banner"
+					style="display: none"
+				>
+					<div class="insight-icon">⚠️</div>
+					<div class="insight-text" id="displacement-banner-text"></div>
+				</div>
+
+				<div class="full-width">
+					<div class="section-title">Cross-State Voter Displacement</div>
+					<div class="section-sub">
+						People living in one state but registered to vote in another. This
+						data makes the legal case for cross-state PVC collection — and shows
+						where our outreach should target voters who cannot easily travel
+						back to vote.
+					</div>
+					<div class="displacement-grid" id="displacement-grid">
+						<div
+							style="
+								grid-column: 1/-1;
+								text-align: center;
+								color: var(--ink-light);
+								padding: 2rem;
+								font-size: 0.85rem;
+							"
+						>
+							Loading displacement data…
+						</div>
+					</div>
+				</div>
+
+				<div class="full-width">
+					<div class="section-title">How Are People Reaching Us?</div>
+					<div class="section-sub">
+						Source channel breakdown — tells us where to concentrate outreach
+						resources. If 70% arrive via WhatsApp, that's where we advertise.
+					</div>
+					<div class="channel-grid" id="channel-grid">
+						<div class="channel-card">
+							<div class="channel-pct" id="ch-whatsapp">—</div>
+							<div class="channel-label">WhatsApp</div>
+						</div>
+						<div class="channel-card">
+							<div class="channel-pct" id="ch-twitter">—</div>
+							<div class="channel-label">X/Twitter</div>
+						</div>
+						<div class="channel-card">
+							<div class="channel-pct" id="ch-friend">—</div>
+							<div class="channel-label">Friend/Family</div>
+						</div>
+						<div class="channel-card">
+							<div class="channel-pct" id="ch-community">—</div>
+							<div class="channel-label">Community</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="full-width">
+					<div class="section-title">States with Lowest PVC Collection</div>
+					<div class="section-sub">
+						These states need priority outreach. Red cards = under 50% PVC
+						collection rate among registrants.
+					</div>
+					<div class="pvc-grid" id="insights-pvc-grid">
+						<div
+							style="
+								grid-column: 1/-1;
+								text-align: center;
+								color: var(--ink-light);
+								padding: 2rem;
+								font-size: 0.85rem;
+							"
+						>
+							Loading…
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ══════════════════════════════════════
+       TAB 5: OUTREACH
+  ══════════════════════════════════════ -->
+			<div class="tab-content" id="tab-content-outreach">
 				<div class="section-title">Mobile Outreach Links</div>
 				<div class="section-sub">
 					Share these links to bring more voters in via WhatsApp, SMS, or email
@@ -1009,12 +2710,11 @@
 							group chats urging people to register their PVC status.
 						</div>
 						<a
-							href="https://wa.me/?text=Hello%21%20Please%20register%20your%20PVC%20status%20for%20Nigeria%202027%20elections%20here%3A%20https%3A%2F%2Fpvctracker.netlify.app%0A%0AEvery%20vote%20counts.%20Takes%2060%20seconds."
+							href="https://wa.me/?text=Hello%21%20Please%20register%20your%20PVC%20status%20for%20Nigeria%202027%20elections%20here%3A%20https%3A%2F%2Fpvcwatch.netlify.app%0A%0AEvery%20vote%20counts.%20Takes%2060%20seconds."
 							class="outreach-link"
 							target="_blank"
+							>Open in WhatsApp →</a
 						>
-							Open in WhatsApp →
-						</a>
 					</div>
 					<div class="outreach-card">
 						<div class="outreach-icon sms">💬</div>
@@ -1024,11 +2724,10 @@
 							useful for reaching older voters and those in rural areas.
 						</div>
 						<a
-							href="sms:?body=Register%20your%20PVC%20status%20for%20Nigeria%202027%3A%20https%3A%2F%2Fpvctracker.netlify.app%20-%20takes%2060%20seconds."
+							href="sms:?body=Register%20your%20PVC%20status%20for%20Nigeria%202027%3A%20https%3A%2F%2Fpvcwatch.netlify.app%20-%20takes%2060%20seconds."
 							class="outreach-link"
+							>Compose SMS →</a
 						>
-							Compose SMS →
-						</a>
 					</div>
 					<div class="outreach-card">
 						<div class="outreach-icon email">📧</div>
@@ -1038,22 +2737,243 @@
 							professionals, diaspora, and organised community groups.
 						</div>
 						<a
-							href="mailto:?subject=Register%20Your%20PVC%20Status%20%E2%80%94%20Nigeria%202027&body=Dear%20friend%2C%0A%0AThe%202027%20elections%20are%20approaching.%20Please%20take%2060%20seconds%20to%20register%20your%20PVC%20status%20at%20https%3A%2F%2Fpvcwatch.netlify.app%0A%0AEvery%20vote%20matters.%20Share%20with%20everyone%20you%20know."
+							href="/cdn-cgi/l/email-protection#201f5355424a4543541d7245474953544552051210794f55520512107076630512107354415455530512100565120518100519140512106e4947455249410512101210121706424f44591d64454152051210465249454e4405126305106105106174484505121012101217051210454c454354494f4e53051210415245051210415050524f414348494e470e051210704c4541534505121054414b4505121016100512105345434f4e4453051210544f0512105245474953544552051210594f55520512107076630512105354415455530512104154051210485454505305136105126605126650564357415443480e4e45544c4946590e4150500510610510616556455259051210564f54450512104d4154544552530e05121073484152450512105749544805121045564552594f4e45051210594f550512104b4e4f570e"
 							class="outreach-link"
 							>Compose Email →</a
 						>
 					</div>
 				</div>
+
+				<div style="margin-top: 2.5rem">
+					<div class="section-title">Volunteer Outreach</div>
+					<div class="section-sub">
+						Share the volunteer signup link — we need 353,000 observers. Every
+						person you recruit matters.
+					</div>
+					<div class="outreach-grid">
+						<div class="outreach-card">
+							<div class="outreach-icon wa">🙋</div>
+							<div class="outreach-title">Recruit Observers via WhatsApp</div>
+							<div class="outreach-desc">
+								Share the Field Watch volunteer form in your state and LGA
+								WhatsApp groups. We need at least 2 observers per polling unit.
+							</div>
+							<a
+								href="https://wa.me/?text=Nigeria%20needs%20350%2C000%20election%20observers%20for%202027.%20Sign%20up%20to%20be%20a%20Field%20Watch%20volunteer%20here%3A%20https%3A%2F%2Fpvcwatch.netlify.app%20%23ObiWatch2027"
+								class="outreach-link"
+								target="_blank"
+								>Share Volunteer Link →</a
+							>
+						</div>
+						<div class="outreach-card">
+							<div class="outreach-icon sms">⚖️</div>
+							<div class="outreach-title">Recruit Legal Observers</div>
+							<div class="outreach-desc">
+								Know a lawyer or law student? We need 8,800+ legal observers —
+								one per ward. Share this with legal professionals in your
+								network.
+							</div>
+							<a
+								href="/cdn-cgi/l/email-protection#310e4244535b5452450c7d5456505d1403017e53425443475443421403017f54545554551403011474031409011408051403017f5856544358501403010301030617535e55480c66541403015f5454551403015d5456505d1403015e5342544347544342140301575e4314030145595414030103010306140301545d545245585e5f421f1403016258565f14030144411403015045140301594545414214027014037714037741475246504552591f5f54455d5857481f504141140301505f5514030142545d5452451403011403037d5456505d1403017e534254434754431403031403015042140301485e4443140301435e5d541f"
+								class="outreach-link"
+								>Email Lawyers →</a
+							>
+						</div>
+						<div class="outreach-card">
+							<div class="outreach-icon email">📻</div>
+							<div class="outreach-title">Community Sensitisation</div>
+							<div class="outreach-desc">
+								Download talking points for community radio, town halls, and
+								market outreach. Available in English, Hausa, Igbo, Yoruba, and
+								Pidgin.
+							</div>
+							<a
+								href="#"
+								class="outreach-link"
+								onclick="
+									alert(
+										'Talking points download coming soon. Contact your state coordinator.',
+									)
+								"
+								>Download Talking Points →</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ══════════════════════════════════════
+       TAB 6: ADMIN (PIN-GATED)
+  ══════════════════════════════════════ -->
+			<div class="tab-content" id="tab-content-admin">
+				<div id="admin-gate-screen">
+					<div class="admin-gate">
+						<h4>🔒 Admin Area</h4>
+						<p>
+							This section contains raw voter and volunteer submissions. Access
+							is restricted to authorised coordinators.
+						</p>
+						<div class="admin-gate-row">
+							<input
+								type="password"
+								id="admin-pin-input"
+								placeholder="Enter admin PIN"
+								onkeyup="if (event.key === 'Enter') unlockAdmin();"
+							/>
+							<button onclick="unlockAdmin()">Unlock</button>
+						</div>
+						<p
+							id="admin-pin-error"
+							style="
+								color: var(--red);
+								font-size: 0.78rem;
+								margin-top: 0.8rem;
+								display: none;
+							"
+						>
+							Incorrect PIN. Contact the campaign organiser.
+						</p>
+					</div>
+				</div>
+
+				<div id="admin-content" style="display: none">
+					<div class="full-width">
+						<div class="section-title">Recent Voter Submissions</div>
+						<div class="section-sub">
+							Latest verified entries — for coordinator review only. Not
+							public-facing.
+						</div>
+						<div
+							class="dashboard-panel"
+							style="overflow: hidden; overflow-x: auto"
+						>
+							<table class="submissions-table">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Residence</th>
+										<th>PVC State</th>
+										<th>Status</th>
+										<th>Source</th>
+										<th>Time</th>
+									</tr>
+								</thead>
+								<tbody id="submissions-body">
+									<tr>
+										<td
+											colspan="6"
+											style="
+												text-align: center;
+												padding: 2rem;
+												color: var(--ink-light);
+											"
+										>
+											Loading…
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="full-width">
+						<div class="section-title">Volunteer Submissions</div>
+						<div class="section-sub">
+							All volunteer signups — full names and contact details for
+							coordinator use only.
+						</div>
+						<div
+							class="dashboard-panel"
+							style="overflow: hidden; overflow-x: auto"
+						>
+							<table class="submissions-table">
+								<thead>
+									<tr>
+										<th>Team</th>
+										<th>Name</th>
+										<th>Phone</th>
+										<th>Email</th>
+										<th>State</th>
+										<th>LGA</th>
+										<th>Role</th>
+										<th>Time</th>
+									</tr>
+								</thead>
+								<tbody id="vol-submissions-body">
+									<tr>
+										<td
+											colspan="7"
+											style="
+												text-align: center;
+												padding: 2rem;
+												color: var(--ink-light);
+											"
+										>
+											Loading…
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<div class="full-width">
+						<div class="section-title">Incident Reports</div>
+						<div class="section-sub">
+							All submitted incident reports including contact details where
+							provided. Handle with confidentiality.
+						</div>
+						<div
+							class="dashboard-panel"
+							style="overflow: hidden; overflow-x: auto"
+						>
+							<table class="submissions-table">
+								<thead>
+									<tr>
+										<th>Type</th>
+										<th>Severity</th>
+										<th>State</th>
+										<th>LGA</th>
+										<th>Unit</th>
+										<th>Description</th>
+										<th>Contact</th>
+										<th>Time</th>
+									</tr>
+								</thead>
+								<tbody id="incident-admin-body">
+									<tr>
+										<td
+											colspan="8"
+											style="
+												text-align: center;
+												padding: 2rem;
+												color: var(--ink-light);
+											"
+										>
+											Loading…
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 		</main>
+
 		<footer>
 			<strong>PVCWatch</strong> — A civic initiative for the Obidient Movement ·
 			Nigeria 2027<br />
-			Data stored securely in Firebase Firestore. No personal data is sold or
-			shared.<br />
+			Data stored securely. No personal data is sold or shared.<br />
+			Incident reports are anonymous. Volunteer contact details are visible only
+			to state coordinators.<br />
 			Not affiliated with INEC or any political party.
 		</footer>
 
+		<script
+			data-cfasync="false"
+			src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+		></script>
 		<script type="module">
 			import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 			import {
@@ -1062,8 +2982,12 @@
 				addDoc,
 				onSnapshot,
 				serverTimestamp,
+				query,
+				orderBy,
+				limit,
 			} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+			// ── STATES ──
 			const STATES = [
 				"Abia",
 				"Adamawa",
@@ -1103,13 +3027,25 @@
 				"Yobe",
 				"Zamfara",
 			];
+			// document
+			// 	.querySelectorAll('.checkbox-item input[type="checkbox"]')
+			// 	.forEach((cb) => {
+			// 		cb.addEventListener("click", (e) => e.stopPropagation());
+			// 	});
 
 			function populateSelects() {
-				const s1 = document.getElementById("state-select");
-				const s2 = document.getElementById("reg-state-select");
-				STATES.forEach((s) => {
-					s1.innerHTML += `<option value="${s}">${s}</option>`;
-					s2.innerHTML += `<option value="${s}">${s}</option>`;
+				const selects = [
+					"state-select",
+					"reg-state-select",
+					"vol-state",
+					"incident-state",
+				];
+				selects.forEach((id) => {
+					const el = document.getElementById(id);
+					if (!el) return;
+					STATES.forEach(
+						(s) => (el.innerHTML += `<option value="${s}">${s}</option>`),
+					);
 				});
 				const yearSelect = document.getElementById("year-select");
 				const currentYear = new Date().getFullYear();
@@ -1118,10 +3054,8 @@
 			}
 			populateSelects();
 
-			// ========== PERSISTENT ANTI-DUPLICATE SYSTEM ==========
-			// Creates a persistent fingerprint that survives page reloads
+			// ── ANTI-DUPLICATE ──
 			function generatePersistentFingerprint() {
-				// Combine multiple browser characteristics
 				const ua = navigator.userAgent;
 				const screenRes = `${screen.width}x${screen.height}x${screen.colorDepth}`;
 				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -1129,11 +3063,7 @@
 				const platform = navigator.platform;
 				const cpuCores = navigator.hardwareConcurrency || "unknown";
 				const deviceMemory = navigator.deviceMemory || "unknown";
-
-				// Create a unique string
 				const fingerprintString = `${ua}|${screenRes}|${timezone}|${language}|${platform}|${cpuCores}|${deviceMemory}`;
-
-				// Simple hash function
 				let hash = 0;
 				for (let i = 0; i < fingerprintString.length; i++) {
 					hash = (hash << 5) - hash + fingerprintString.charCodeAt(i);
@@ -1141,200 +3071,160 @@
 				}
 				return Math.abs(hash).toString(16);
 			}
-
-			// Generate IP-like identifier (simulated - in production, use actual IP from server)
 			function generateIPHash() {
-				// This simulates an IP-based identifier
-				// In production, you'd get this from your backend API
-				const storedIP = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.ipStorageKey,
-				);
-				if (storedIP) return storedIP;
-
-				// Generate a persistent random ID for this browser/device combination
+				const stored = localStorage.getItem(ANTI_DUPLICATE_CONFIG.ipStorageKey);
+				if (stored) return stored;
 				const newIPHash =
 					"ip_" + generatePersistentFingerprint().substring(0, 12);
 				localStorage.setItem(ANTI_DUPLICATE_CONFIG.ipStorageKey, newIPHash);
 				return newIPHash;
 			}
-
-			// Check if user has already submitted (PERSISTENT across reloads)
 			function hasAlreadySubmitted() {
-				const storedFingerprint = localStorage.getItem(
-					ANTI_DUPLICATE_CONFIG.storageKey,
-				);
-				const currentFingerprint = generatePersistentFingerprint();
+				const storedFP = localStorage.getItem(ANTI_DUPLICATE_CONFIG.storageKey);
+				const currentFP = generatePersistentFingerprint();
 				const storedIP = localStorage.getItem(
 					ANTI_DUPLICATE_CONFIG.ipStorageKey,
 				);
 				const currentIP = generateIPHash();
-
-				// Check if either fingerprint or IP matches stored records
-				const fingerprintMatch =
-					storedFingerprint && storedFingerprint === currentFingerprint;
-				const ipMatch = storedIP && storedIP === currentIP;
-
-				// Also check if we have a submission ID stored
-				const hasSubmissionId = localStorage.getItem(
+				const hasId = localStorage.getItem(
 					ANTI_DUPLICATE_CONFIG.submissionRecordKey,
 				);
-
-				if (fingerprintMatch || ipMatch || hasSubmissionId) {
-					return true;
-				}
-				return false;
+				return (
+					(storedFP && storedFP === currentFP) ||
+					(storedIP && storedIP === currentIP) ||
+					!!hasId
+				);
 			}
-
-			// Mark as submitted with PERSISTENT storage
 			function markAsPermanentlySubmitted(docId) {
-				const fingerprint = generatePersistentFingerprint();
-				const ipHash = generateIPHash();
-
-				// Store in localStorage - this survives page reloads and browser restarts
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fingerprint);
-				localStorage.setItem(ANTI_DUPLICATE_CONFIG.ipStorageKey, ipHash);
+				const fp = generatePersistentFingerprint();
+				const ip = generateIPHash();
+				localStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fp);
+				localStorage.setItem(ANTI_DUPLICATE_CONFIG.ipStorageKey, ip);
 				localStorage.setItem(ANTI_DUPLICATE_CONFIG.submissionRecordKey, docId);
-
-				// Also store in sessionStorage as backup
-				sessionStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fingerprint);
+				sessionStorage.setItem(ANTI_DUPLICATE_CONFIG.storageKey, fp);
 				sessionStorage.setItem(
 					ANTI_DUPLICATE_CONFIG.submissionRecordKey,
 					docId,
 				);
 			}
-
-			// Get submission info if exists
-			function getExistingSubmissionInfo() {
-				const submitted = hasAlreadySubmitted();
-				if (submitted) {
-					return {
-						submitted: true,
-						docId: localStorage.getItem(
-							ANTI_DUPLICATE_CONFIG.submissionRecordKey,
-						),
-						fingerprint: localStorage.getItem(ANTI_DUPLICATE_CONFIG.storageKey),
-					};
-				}
-				return { submitted: false };
-			}
-
-			// Show warning if already submitted (persistent message)
 			function checkAndShowDuplicateWarning() {
-				const submitted = hasAlreadySubmitted();
 				const warningDiv = document.getElementById("duplicate-warning");
-
-				if (submitted) {
-					warningDiv.innerHTML = `
-                ⚠️ <strong>You have already registered!</strong> This device has already submitted a response. 
-                One person, one submission policy is enforced. If you're helping someone else, 
-                use the "Authorized helper" override code below.
-            `;
+				const btn = document.getElementById("submit-btn");
+				if (hasAlreadySubmitted()) {
+					warningDiv.innerHTML = `⚠️ <strong>You have already registered!</strong> One submission per device. If you're helping someone else, use the helper override below.`;
 					warningDiv.style.display = "block";
-
-					// Disable submit button but keep form visible for helpers
-					const btn = document.getElementById("submit-btn");
 					btn.disabled = true;
 					btn.style.opacity = "0.6";
-					btn.title =
-						"You've already registered. Use helper override to assist others.";
 				} else {
 					warningDiv.style.display = "none";
-					const btn = document.getElementById("submit-btn");
 					btn.disabled = false;
 					btn.style.opacity = "1";
 				}
 			}
 
-			let adminOverrideActive = false;
-			let adminOverrideUsed = false;
+			// ── FIREBASE ──
+			let db = null,
+				votersCol = null,
+				volunteersCol = null,
+				incidentsCol = null;
+			let allVoters = [],
+				allVolunteers = [],
+				allIncidents = [];
+			let adminOverrideActive = false,
+				adminOverrideUsed = false;
 
-			// Admin helper logic
-			document
-				.getElementById("toggleAdminBtn")
-				.addEventListener("click", () => {
-					const panel = document.getElementById("adminPanel");
-					panel.style.display =
-						panel.style.display === "block" ? "none" : "block";
-				});
+			function initFirebase() {
+				try {
+					const app = initializeApp(FIREBASE_CONFIG);
+					db = getFirestore(app);
+					votersCol = collection(db, "voters");
+					volunteersCol = collection(db, "volunteers");
+					incidentsCol = collection(db, "incidents");
 
-			document
-				.getElementById("unlockHelperBtn")
-				.addEventListener("click", () => {
-					const codeInput = document.getElementById("adminCode").value.trim();
-					if (codeInput === ANTI_DUPLICATE_CONFIG.adminOverrideCode) {
-						adminOverrideActive = true;
-						adminOverrideUsed = false;
-						document.getElementById("helperStatus").innerHTML =
-							"✅ Override ACTIVE! You can now submit for another person. This is a one-time use.";
-						document.getElementById("helperStatus").style.color = "green";
+					const statusEl = document.getElementById("fb-status");
 
-						// Re-enable submit button if it was disabled
-						const btn = document.getElementById("submit-btn");
-						btn.disabled = false;
-						btn.style.opacity = "1";
-						btn.style.background = "var(--gold)";
-						btn.innerHTML = "🌟 SUBMIT FOR ASSISTED PERSON (Override Mode)";
+					onSnapshot(
+						votersCol,
+						(snap) => {
+							allVoters = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+							renderVoterDashboard(allVoters);
+							renderInsights(allVoters);
+							updateGlobalStats();
+							statusEl.innerText = "🔴 Live";
+							statusEl.className = "firebase-status ok";
+						},
+						(err) => {
+							statusEl.innerText = "Error";
+							statusEl.className = "firebase-status err";
+						},
+					);
 
-						// Clear any warning about duplicate
-						const warningDiv = document.getElementById("duplicate-warning");
-						warningDiv.style.display = "none";
+					onSnapshot(volunteersCol, (snap) => {
+						allVolunteers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+						renderVolunteerDashboard(allVolunteers);
+						updateGlobalStats();
+					});
 
-						setTimeout(() => {
-							document.getElementById("adminPanel").style.display = "none";
-						}, 2000);
-					} else {
-						document.getElementById("helperStatus").innerHTML =
-							"❌ Invalid override code. Contact campaign organizer for the correct code.";
-						document.getElementById("helperStatus").style.color = "red";
-					}
-				});
+					onSnapshot(incidentsCol, (snap) => {
+						allIncidents = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+						renderIncidentLog(allIncidents);
+						updateGlobalStats();
+					});
+				} catch (e) {
+					console.error(e);
+					document.getElementById("fb-status").innerText = "Init error";
+					document.getElementById("fb-status").className =
+						"firebase-status err";
+				}
+			}
+			initFirebase();
 
-			let dbReady = false,
-				db = null,
-				colRef = null;
-			let allDocs = [];
-
-			function renderDashboard(docs) {
-				allDocs = docs;
-				const total = docs.length;
-				const hasPvc = docs.filter((d) => d.pvcStatus === "yes").length;
-				const uniqueStates = new Set(docs.map((d) => d.state)).size;
-				const todayStr = new Date().toDateString();
-				const todayCount = docs.filter(
-					(d) =>
-						d.ts &&
-						new Date(d.ts.toMillis ? d.ts.toMillis() : d.ts).toDateString() ===
-							todayStr,
-				).length;
+			// ── GLOBAL STATS ──
+			function updateGlobalStats() {
 				document.getElementById("total-registered").innerText =
-					total.toLocaleString();
-				document.getElementById("total-pvc").innerText =
-					hasPvc.toLocaleString();
-				document.getElementById("total-states").innerText = uniqueStates;
-				document.getElementById("today-count").innerText = todayCount;
+					allVoters.length.toLocaleString();
+				document.getElementById("total-pvc").innerText = allVoters
+					.filter((d) => d.pvcStatus === "yes")
+					.length.toLocaleString();
+				const displaced = allVoters.filter(
+					(d) => d.state && d.regState && d.state !== d.regState,
+				).length;
+				document.getElementById("total-displaced").innerText =
+					displaced.toLocaleString();
+				document.getElementById("total-volunteers").innerText =
+					allVolunteers.length.toLocaleString();
+				document.getElementById("total-incidents").innerText =
+					allIncidents.length.toLocaleString();
+				document.getElementById("vol-total").innerText =
+					allVolunteers.length.toLocaleString();
+				document.getElementById("vol-states").innerText = new Set(
+					allVolunteers.map((v) => v.state),
+				).size;
+			}
 
+			// ── VOTER DASHBOARD ──
+			function renderVoterDashboard(docs) {
 				const counts = {};
 				docs.forEach((d) => (counts[d.state] = (counts[d.state] || 0) + 1));
 				const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
 				const max = sorted[0]?.[1] || 1;
 				const stateContainer = document.getElementById("state-list");
-				if (sorted.length === 0)
-					stateContainer.innerHTML = `<div style="padding:2rem;text-align:center;">No submissions yet.</div>`;
-				else
-					stateContainer.innerHTML = sorted
-						.map(
-							([st, cnt]) =>
-								`<div class="state-row"><span class="state-name">${st}</span><div class="state-bar-wrap"><div class="state-bar" style="width:${(cnt / max) * 100}%"></div></div><span class="state-count">${cnt}</span></div>`,
-						)
-						.join("");
+				stateContainer.innerHTML =
+					sorted.length === 0
+						? `<div style="padding:2rem;text-align:center;">No submissions yet.</div>`
+						: sorted
+								.map(
+									([st, cnt]) =>
+										`<div class="state-row"><span class="state-name">${st}</span><div class="state-bar-wrap"><div class="state-bar green" style="width:${(cnt / max) * 100}%"></div></div><span class="state-count">${cnt}</span></div>`,
+								)
+								.join("");
 
 				const regMap = {};
 				docs.forEach((d) => {
 					if (!regMap[d.regState])
 						regMap[d.regState] = { yes: 0, no: 0, processing: 0 };
-					regMap[d.regState][d.pvcStatus]++;
+					if (d.pvcStatus) regMap[d.regState][d.pvcStatus]++;
 				});
-				const gridDiv = document.getElementById("pvc-grid");
 				const sortedPVC = Object.entries(regMap).sort(
 					(a, b) =>
 						b[1].yes +
@@ -1342,49 +3232,752 @@
 						b[1].processing -
 						(a[1].yes + a[1].no + a[1].processing),
 				);
-				if (sortedPVC.length === 0)
-					gridDiv.innerHTML = `<div style="grid-column:1/-1;text-align:center;">No PVC data yet</div>`;
-				else
-					gridDiv.innerHTML = sortedPVC
-						.map(([state, stats]) => {
-							const totalState = stats.yes + stats.no + stats.processing;
-							const pct = totalState
-								? Math.round((stats.yes / totalState) * 100)
-								: 0;
-							return `<div class="pvc-card"><div class="pvc-state">${state}</div><div class="pvc-count">${pct}%</div><div class="pvc-label">${stats.yes} of ${totalState} have PVC</div><span class="badge badge-yes">collected ${pct}%</span></div>`;
-						})
-						.join("");
-
-				const recent = [...docs]
-					.sort((a, b) => (b.ts?.toMillis?.() || 0) - (a.ts?.toMillis?.() || 0))
-					.slice(0, 12);
-				const tbody = document.getElementById("submissions-body");
-				if (recent.length === 0)
-					tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Waiting for first submissions</td></tr>`;
-				else
-					tbody.innerHTML = recent
-						.map((s) => {
-							const cls =
-								s.pvcStatus === "yes"
-									? "badge-yes"
-									: s.pvcStatus === "processing"
-										? "badge-processing"
-										: "badge-no";
-							const txt =
-								s.pvcStatus === "yes"
-									? "Has PVC"
-									: s.pvcStatus === "processing"
-										? "In Progress"
-										: "No PVC";
-							const anon = s.fname
-								? s.fname[0].toUpperCase() +
-									"*".repeat(Math.min(s.fname.length - 1, 3))
-								: "—";
-							return `<tr><td>${anon}</td><td>${s.state || "—"}</td><td>${s.regState || "—"}</td><td><span class="badge ${cls}">${txt}</span></td><td>${s.channels || "direct"}</td><td class="time-ago">${timeAgo(s.ts)}</td></tr>`;
-						})
-						.join("");
+				const gridDiv = document.getElementById("pvc-grid");
+				gridDiv.innerHTML =
+					sortedPVC.length === 0
+						? `<div style="grid-column:1/-1;text-align:center;">No PVC data yet</div>`
+						: sortedPVC
+								.map(([state, stats]) => {
+									const total = stats.yes + stats.no + stats.processing;
+									const pct = total ? Math.round((stats.yes / total) * 100) : 0;
+									const isAlert = pct < 50 && total > 2;
+									return `<div class="pvc-card ${isAlert ? "alert" : ""}">
+          <div class="pvc-state">${state}</div>
+          <div class="pvc-count">${pct}%</div>
+          <div class="pvc-label">${stats.yes} of ${total} have PVC</div>
+          <span class="badge ${isAlert ? "badge-no" : "badge-yes"}">${isAlert ? "⚠️ low collection" : "✓ collecting"}</span>
+        </div>`;
+								})
+								.join("");
 			}
 
+			// ── VOLUNTEER DASHBOARD ──
+			const TEAM_LABELS = {
+				t1: "Tech Security",
+				t2: "Voter Data",
+				t3: "PVC Logistics",
+				t4: "Field Watch",
+				t5: "Civic Education",
+				t6: "Legal & Advocacy",
+			};
+			const TEAM_ICONS = {
+				t1: "💻",
+				t2: "📊",
+				t3: "🚐",
+				t4: "👁️",
+				t5: "📢",
+				t6: "⚖️",
+			};
+
+			function renderVolunteerDashboard(vols) {
+				// State list
+				const counts = {};
+				vols.forEach((v) => (counts[v.state] = (counts[v.state] || 0) + 1));
+				const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+				const max = sorted[0]?.[1] || 1;
+				const volList = document.getElementById("vol-state-list");
+				volList.innerHTML =
+					sorted.length === 0
+						? `<div style="padding:2rem;text-align:center;color:var(--ink-light);">No volunteers yet.</div>`
+						: sorted
+								.map(
+									([st, cnt]) =>
+										`<div class="state-row"><span class="state-name">${st}</span><div class="state-bar-wrap"><div class="state-bar gold" style="width:${(cnt / max) * 100}%"></div></div><span class="state-count">${cnt}</span></div>`,
+								)
+								.join("");
+
+				// Team breakdown
+				const teamCounts = { t1: 0, t2: 0, t3: 0, t4: 0, t5: 0, t6: 0 };
+				vols.forEach((v) => {
+					if (teamCounts[v.team] !== undefined) teamCounts[v.team]++;
+				});
+				const totalVols = vols.length || 1;
+				document.getElementById("vol-team-breakdown").innerHTML =
+					Object.entries(teamCounts)
+						.map(([team, count]) => {
+							const pct = Math.round((count / totalVols) * 100);
+							return `<div style="margin-bottom:0.8rem;">
+      <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.3rem;">
+        <span style="font-weight:500;">${TEAM_ICONS[team]} ${TEAM_LABELS[team]}</span>
+        <span style="font-family:'DM Mono',monospace;">${count} (${pct}%)</span>
+      </div>
+      <div style="height:6px;background:var(--surface);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:var(--gold);border-radius:3px;transition:width 0.6s;"></div>
+      </div>
+    </div>`;
+						})
+						.join("");
+
+				// Field Watch role breakdown (Team 4 only)
+				const t4vols = vols.filter((v) => v.team === "t4");
+				const roles = {
+					observer: 0,
+					coordinator: 0,
+					responder: 0,
+					"legal-observer": 0,
+				};
+				t4vols.forEach((v) => {
+					if (v.role && roles[v.role] !== undefined) roles[v.role]++;
+				});
+				const roleLabels = {
+					observer: "Polling Unit Observer",
+					coordinator: "Ward Coordinator",
+					responder: "Incident Responder",
+					"legal-observer": "Legal Observer",
+				};
+				const totalT4 = t4vols.length || 1;
+				document.getElementById("vol-role-breakdown").innerHTML =
+					t4vols.length === 0
+						? `<div style="color:var(--ink-light);font-size:0.82rem;text-align:center;padding:0.5rem;">No Field Watch volunteers yet.</div>`
+						: Object.entries(roles)
+								.map(([role, count]) => {
+									const pct = Math.round((count / totalT4) * 100);
+									return `<div style="margin-bottom:0.8rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.3rem;">
+            <span style="font-weight:500;">${roleLabels[role]}</span>
+            <span style="font-family:'DM Mono',monospace;">${count} (${pct}%)</span>
+          </div>
+          <div style="height:6px;background:var(--surface);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:var(--green-mid);border-radius:3px;transition:width 0.6s;"></div>
+          </div>
+        </div>`;
+								})
+								.join("");
+
+				// Admin view — now has Team column
+				const volBody = document.getElementById("vol-submissions-body");
+				if (volBody) {
+					const recent = [...vols]
+						.sort(
+							(a, b) => (b.ts?.toMillis?.() || 0) - (a.ts?.toMillis?.() || 0),
+						)
+						.slice(0, 100);
+					volBody.innerHTML =
+						recent.length === 0
+							? `<tr><td colspan="8" style="text-align:center;padding:2rem;">No volunteers yet.</td></tr>`
+							: recent
+									.map(
+										(v) => `<tr>
+          <td>${TEAM_ICONS[v.team] || ""} ${TEAM_LABELS[v.team] || v.team || "—"}</td>
+          <td>${v.name || "—"}</td>
+          <td>${v.phone || "—"}</td>
+          <td>${v.email || "—"}</td>
+          <td>${v.state || "—"}</td>
+          <td>${v.lga || v.t3lga || "—"}</td>
+          <td>${v.role || "—"}</td>
+          <td class="time-ago">${timeAgo(v.ts)}</td>
+        </tr>`,
+									)
+									.join("");
+				}
+			}
+
+			// ── TEAM SELECTION UI ──
+			window.selectTeam = function (teamId) {
+				document.getElementById("vol-team").value = teamId;
+				document
+					.querySelectorAll(".vol-team-fields")
+					.forEach((f) => (f.style.display = "none"));
+				const fields = document.getElementById(`fields-${teamId}`);
+				if (fields) fields.style.display = "block";
+
+				const subtitles = {
+					t1: "Cybersecurity, dev, network & data roles",
+					t2: "Registry, dashboard & survey roles",
+					t3: "Field coordination & transport roles",
+					t4: "Observer, coordinator & responder roles",
+					t5: "Content, media, radio & translation roles",
+					t6: "Legal, advocacy & policy roles",
+				};
+				document.getElementById("vol-form-icon").innerText =
+					TEAM_ICONS[teamId] || "🙋";
+				document.getElementById("vol-form-title").innerText =
+					`${TEAM_LABELS[teamId]} — Volunteer Form`;
+				document.getElementById("vol-form-subtitle").innerText =
+					subtitles[teamId] || "";
+
+				document.getElementById("vol-team-picker").style.display = "none";
+				document.getElementById("vol-form-section").style.display = "block";
+				window.scrollTo({
+					top: document.querySelector(".tab-bar").offsetTop - 60,
+					behavior: "smooth",
+				});
+			};
+
+			window.backToTeamPicker = function () {
+				document.getElementById("vol-form-section").style.display = "none";
+				document.getElementById("vol-team-picker").style.display = "block";
+				document.getElementById("vol-team").value = "";
+			};
+
+			// ── INCIDENT LOG ──
+			function renderIncidentLog(incidents) {
+				const log = document.getElementById("incident-log");
+				const sorted = [...incidents].sort(
+					(a, b) => (b.ts?.toMillis?.() || 0) - (a.ts?.toMillis?.() || 0),
+				);
+				const svColors = { 1: "s1", 2: "s2", 3: "s3" };
+				log.innerHTML =
+					sorted.length === 0
+						? `<div style="padding:2rem;text-align:center;color:var(--ink-light);font-size:0.85rem;">No incidents reported yet.</div>`
+						: sorted
+								.slice(0, 30)
+								.map(
+									(inc) => `
+        <div class="incident-row">
+          <div class="incident-dot ${svColors[inc.severity] || "s1"}"></div>
+          <div class="incident-body">
+            <div class="incident-type-label">${inc.type || "Unknown"} · ${inc.state || "Unknown state"}, ${inc.lga || ""}</div>
+            <div class="incident-desc">${inc.description ? inc.description.substring(0, 180) + (inc.description.length > 180 ? "…" : "") : "No description."}</div>
+            <div class="incident-meta">${timeAgo(inc.ts)}${inc.time ? ` · reported at ${inc.time}` : ""}</div>
+          </div>
+        </div>
+      `,
+								)
+								.join("");
+
+				// State breakdown
+				const stateCounts = {};
+				incidents.forEach(
+					(i) => (stateCounts[i.state] = (stateCounts[i.state] || 0) + 1),
+				);
+				const sortedStates = Object.entries(stateCounts).sort(
+					(a, b) => b[1] - a[1],
+				);
+				const maxS = sortedStates[0]?.[1] || 1;
+				const incStateList = document.getElementById("incident-state-list");
+				incStateList.innerHTML =
+					sortedStates.length === 0
+						? `<div style="padding:1.5rem;text-align:center;color:var(--ink-light);">No data yet.</div>`
+						: sortedStates
+								.map(
+									([st, cnt]) =>
+										`<div class="state-row"><span class="state-name">${st}</span><div class="state-bar-wrap"><div class="state-bar" style="width:${(cnt / maxS) * 100}%;background:linear-gradient(90deg,var(--red),#8c2e24);"></div></div><span class="state-count">${cnt}</span></div>`,
+								)
+								.join("");
+
+				// Admin view
+				const incAdminBody = document.getElementById("incident-admin-body");
+				if (incAdminBody) {
+					incAdminBody.innerHTML =
+						sorted.length === 0
+							? `<tr><td colspan="8" style="text-align:center;padding:2rem;">No incidents yet.</td></tr>`
+							: sorted
+									.slice(0, 50)
+									.map(
+										(i) => `<tr>
+          <td>${i.type || "—"}</td>
+          <td>${i.severity === "3" ? "🔴 Urgent" : i.severity === "2" ? "🟡 Moderate" : "🟢 Low"}</td>
+          <td>${i.state || "—"}</td>
+          <td>${i.lga || "—"}</td>
+          <td>${i.unit || "—"}</td>
+          <td style="max-width:200px;white-space:normal;">${(i.description || "").substring(0, 100)}…</td>
+          <td>${i.contact || "—"}</td>
+          <td class="time-ago">${timeAgo(i.ts)}</td>
+        </tr>`,
+									)
+									.join("");
+				}
+			}
+
+			// ── INSIGHTS ──
+			function renderInsights(docs) {
+				// Displacement
+				const displacementMap = {};
+				docs.forEach((d) => {
+					if (d.state && d.regState && d.state !== d.regState) {
+						const key = `${d.regState}→${d.state}`;
+						displacementMap[key] = (displacementMap[key] || 0) + 1;
+					}
+				});
+				const sortedDisp = Object.entries(displacementMap).sort(
+					(a, b) => b[1] - a[1],
+				);
+				const grid = document.getElementById("displacement-grid");
+				const banner = document.getElementById("displacement-banner");
+				const bannerText = document.getElementById("displacement-banner-text");
+				const totalDisplaced = sortedDisp.reduce((s, [, v]) => s + v, 0);
+
+				if (totalDisplaced > 0) {
+					banner.style.display = "flex";
+					bannerText.innerHTML = `<strong>${totalDisplaced.toLocaleString()} voters</strong> in our database live in a different state from where their PVC is registered.
+      This means they would need to travel back to their registration state to vote — or be disenfranchised.
+      This data is the legal and advocacy case for cross-state PVC collection. <strong>Share it with Team 6 (Legal).</strong>`;
+				}
+
+				grid.innerHTML =
+					sortedDisp.length === 0
+						? `<div style="grid-column:1/-1;text-align:center;color:var(--ink-light);padding:2rem;">No cross-state data yet — will appear as registrations grow.</div>`
+						: sortedDisp
+								.slice(0, 24)
+								.map(([key, count]) => {
+									const [from, to] = key.split("→");
+									return `<div class="displacement-card">
+          <div class="displacement-count">${count}</div>
+          <div class="displacement-detail">
+            <div class="displacement-title">Registered in ${from}</div>
+            <div class="displacement-sub">Currently living in <strong>${to}</strong><br/>
+              <span class="displacement-arrow">Must travel to ${from} to vote →</span>
+            </div>
+          </div>
+        </div>`;
+								})
+								.join("");
+
+				// Channel breakdown
+				const channels = { whatsapp: 0, twitter: 0, friend: 0, community: 0 };
+				docs.forEach((d) => {
+					if (!d.channels) return;
+					d.channels.split(", ").forEach((c) => {
+						if (channels[c] !== undefined) channels[c]++;
+					});
+				});
+				const total = docs.length || 1;
+				document.getElementById("ch-whatsapp").innerText =
+					Math.round((channels.whatsapp / total) * 100) + "%";
+				document.getElementById("ch-twitter").innerText =
+					Math.round((channels.twitter / total) * 100) + "%";
+				document.getElementById("ch-friend").innerText =
+					Math.round((channels.friend / total) * 100) + "%";
+				document.getElementById("ch-community").innerText =
+					Math.round((channels.community / total) * 100) + "%";
+
+				// Low PVC states
+				const regMap = {};
+				docs.forEach((d) => {
+					if (!regMap[d.regState])
+						regMap[d.regState] = { yes: 0, no: 0, processing: 0 };
+					if (d.pvcStatus) regMap[d.regState][d.pvcStatus]++;
+				});
+				const lowPVC = Object.entries(regMap)
+					.map(([state, stats]) => {
+						const total = stats.yes + stats.no + stats.processing;
+						const pct = total ? Math.round((stats.yes / total) * 100) : 0;
+						return { state, pct, total, stats };
+					})
+					.filter((x) => x.total >= 2)
+					.sort((a, b) => a.pct - b.pct);
+				const insightsPVCGrid = document.getElementById("insights-pvc-grid");
+				insightsPVCGrid.innerHTML =
+					lowPVC.length === 0
+						? `<div style="grid-column:1/-1;text-align:center;padding:2rem;">No data yet.</div>`
+						: lowPVC
+								.slice(0, 12)
+								.map(
+									({ state, pct, total, stats }) => `
+        <div class="pvc-card ${pct < 50 ? "alert" : ""}">
+          <div class="pvc-state">${state}</div>
+          <div class="pvc-count">${pct}%</div>
+          <div class="pvc-label">${stats.yes}/${total} have PVC · ${stats.no} still need one</div>
+          <span class="badge ${pct < 50 ? "badge-no" : "badge-processing"}">${pct < 50 ? "🚨 Priority target" : "⏳ Needs attention"}</span>
+        </div>`,
+								)
+								.join("");
+
+				// Admin submissions table
+				const tbody = document.getElementById("submissions-body");
+				if (tbody) {
+					const recent = [...docs]
+						.sort(
+							(a, b) => (b.ts?.toMillis?.() || 0) - (a.ts?.toMillis?.() || 0),
+						)
+						.slice(0, 50);
+					tbody.innerHTML =
+						recent.length === 0
+							? `<tr><td colspan="6" style="text-align:center;">No submissions yet.</td></tr>`
+							: recent
+									.map((s) => {
+										const cls =
+											s.pvcStatus === "yes"
+												? "badge-yes"
+												: s.pvcStatus === "processing"
+													? "badge-processing"
+													: "badge-no";
+										const txt =
+											s.pvcStatus === "yes"
+												? "Has PVC"
+												: s.pvcStatus === "processing"
+													? "In Progress"
+													: "No PVC";
+										return `<tr>
+            <td>${s.fname || "—"}</td>
+            <td>${s.state || "—"}</td>
+            <td>${s.regState || "—"}</td>
+            <td><span class="badge ${cls}">${txt}</span></td>
+            <td>${s.channels || "direct"}</td>
+            <td class="time-ago">${timeAgo(s.ts)}</td>
+          </tr>`;
+									})
+									.join("");
+				}
+			}
+
+			// ── SUBMIT: VOTER ──
+			window.submitVoterForm = async function () {
+				const fname = document.getElementById("fname").value.trim();
+				const state = document.getElementById("state-select").value;
+				const regState = document.getElementById("reg-state-select").value;
+				const year = document.getElementById("year-select").value;
+				const pvcStatus = document.getElementById("pvc-status").value;
+				if (!fname || !state || !regState || !year || !pvcStatus) {
+					showMsg("form-msg", "Please fill all fields.", "error");
+					return;
+				}
+				if (hasAlreadySubmitted() && !adminOverrideActive) {
+					showMsg(
+						"form-msg",
+						"❌ This device has already registered. Use the helper override below.",
+						"warning",
+					);
+					return;
+				}
+				if (adminOverrideActive && adminOverrideUsed) {
+					showMsg(
+						"form-msg",
+						"Override already used. Refresh or re-enter code.",
+						"warning",
+					);
+					return;
+				}
+				const btn = document.getElementById("submit-btn");
+				btn.disabled = true;
+				btn.innerHTML =
+					'<span style="display:inline-block;width:12px;height:12px;border:2px solid white;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Recording...';
+				const channels =
+					[...document.querySelectorAll('input[name="channel"]:checked')]
+						.map((c) => c.value)
+						.join(", ") || "direct";
+				try {
+					const docRef = await addDoc(votersCol, {
+						fname,
+						state,
+						regState,
+						year: parseInt(year),
+						pvcStatus,
+						channels,
+						ts: serverTimestamp(),
+						submittedByHelper: adminOverrideActive,
+					});
+					if (!adminOverrideActive) {
+						markAsPermanentlySubmitted(docRef.id);
+						showMsg(
+							"form-msg",
+							`✅ Registered! ${fname}, your data is permanently recorded.`,
+							"success",
+						);
+					} else {
+						showMsg(
+							"form-msg",
+							`✅ Assisted registration complete for ${fname}. Override deactivated.`,
+							"success",
+						);
+						adminOverrideUsed = true;
+						adminOverrideActive = false;
+					}
+					btn.innerHTML = "✓ Registered!";
+					btn.style.background = "#0d4a2d";
+					setTimeout(() => {
+						btn.disabled = hasAlreadySubmitted() && !adminOverrideActive;
+						btn.style.background = "";
+						btn.innerHTML = "Submit My Registration";
+					}, 2000);
+					checkAndShowDuplicateWarning();
+				} catch (e) {
+					showMsg("form-msg", "Firebase error — check permissions.", "error");
+					btn.disabled = false;
+					btn.innerHTML = "Submit My Registration";
+				}
+			};
+
+			// ── SUBMIT: VOLUNTEER ──
+			window.submitVolunteerForm = async function () {
+				const name = document.getElementById("vol-name").value.trim();
+				const phone = document.getElementById("vol-phone").value.trim();
+				const state = document.getElementById("vol-state").value;
+				const team = document.getElementById("vol-team").value;
+				const email = document.getElementById("vol-email").value.trim();
+				if (!name || !phone || !state || !team) {
+					showMsg(
+						"vol-form-msg",
+						"Please fill name, phone and state.",
+						"error",
+					);
+					return;
+				}
+
+				const btn = document.getElementById("vol-submit-btn");
+				btn.disabled = true;
+				btn.innerHTML = "Submitting…";
+				const experience = document
+					.getElementById("vol-experience")
+					.value.trim();
+
+				// Collect team-specific fields
+				const extra = {};
+				if (team === "t1") {
+					extra.skills = [
+						...document.querySelectorAll('input[name="t1-skills"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.portfolio = document
+						.getElementById("t1-portfolio")
+						.value.trim();
+					extra.availability = [
+						...document.querySelectorAll('input[name="t1-avail"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+				} else if (team === "t2") {
+					extra.skills = [
+						...document.querySelectorAll('input[name="t2-skills"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.stateCoord =
+						document.querySelector('input[name="t2-coord"]:checked')?.value ||
+						"";
+					extra.languages = [
+						...document.querySelectorAll('input[name="t2-lang"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+				} else if (team === "t3") {
+					extra.lga = document.getElementById("t3-lga").value.trim();
+					extra.vehicle =
+						document.querySelector('input[name="t3-vehicle"]:checked')?.value ||
+						"";
+					extra.languages = [
+						...document.querySelectorAll('input[name="t3-lang"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.availability = [
+						...document.querySelectorAll('input[name="t3-avail"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+				} else if (team === "t4") {
+					extra.lga = document.getElementById("t4-lga").value.trim();
+					extra.ward = document.getElementById("t4-ward").value.trim();
+					extra.role =
+						document.querySelector('input[name="t4-role"]:checked')?.value ||
+						"observer";
+					extra.availability = [
+						...document.querySelectorAll('input[name="t4-avail"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+				} else if (team === "t5") {
+					extra.skills = [
+						...document.querySelectorAll('input[name="t5-skills"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.languages = [
+						...document.querySelectorAll('input[name="t5-lang"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.townhall =
+						document.querySelector('input[name="t5-townhall"]:checked')
+							?.value || "";
+				} else if (team === "t6") {
+					extra.role =
+						document.querySelector('input[name="t6-role"]:checked')?.value ||
+						"";
+					extra.barNumber = document.getElementById("t6-bar").value.trim();
+					extra.experience_legal = [
+						...document.querySelectorAll('input[name="t6-exp"]:checked'),
+					]
+						.map((c) => c.value)
+						.join(", ");
+					extra.availability =
+						document.querySelector('input[name="t6-avail"]:checked')?.value ||
+						"";
+				}
+
+				try {
+					await addDoc(volunteersCol, {
+						name,
+						phone,
+						email,
+						state,
+						team,
+						teamLabel: TEAM_LABELS[team],
+						experience,
+						...extra,
+						ts: serverTimestamp(),
+					});
+					showMsg(
+						"vol-form-msg",
+						`✅ Welcome aboard, ${name}! You've joined ${TEAM_LABELS[team]}. A coordinator will contact you on WhatsApp to confirm your role and next steps.`,
+						"success",
+					);
+					btn.innerHTML = "✓ Joined!";
+					btn.style.background = "#7a4a0d";
+					[
+						"vol-name",
+						"vol-phone",
+						"vol-email",
+						"vol-experience",
+						"t1-portfolio",
+						"t3-lga",
+						"t4-lga",
+						"t4-ward",
+						"t6-bar",
+					].forEach((id) => {
+						const el = document.getElementById(id);
+						if (el) el.value = "";
+					});
+					document
+						.querySelectorAll(
+							'.vol-team-fields input[type="checkbox"], .vol-team-fields input[type="radio"]',
+						)
+						.forEach((el) => (el.checked = false));
+					setTimeout(() => {
+						btn.disabled = false;
+						btn.innerHTML = "Join the Movement";
+						btn.style.background = "";
+					}, 4000);
+				} catch (e) {
+					showMsg(
+						"vol-form-msg",
+						"Error submitting. Please try again.",
+						"error",
+					);
+					btn.disabled = false;
+					btn.innerHTML = "Join the Movement";
+				}
+			};
+
+			// ── SUBMIT: INCIDENT ──
+			window.submitIncidentReport = async function () {
+				const type = document.getElementById("incident-type-val").value;
+				const severity = document.getElementById("incident-severity-val").value;
+				const state = document.getElementById("incident-state").value;
+				const lga = document.getElementById("incident-lga").value.trim();
+				const description = document
+					.getElementById("incident-desc")
+					.value.trim();
+				if (!type || !severity || !state || !description) {
+					showMsg(
+						"incident-form-msg",
+						"Please select incident type, severity, state and provide a description.",
+						"error",
+					);
+					return;
+				}
+				const btn = document.getElementById("incident-submit-btn");
+				btn.disabled = true;
+				btn.innerHTML = "Submitting…";
+				const unit = document.getElementById("incident-unit").value.trim();
+				const time = document.getElementById("incident-time").value;
+				const contact = document
+					.getElementById("incident-contact")
+					.value.trim();
+				try {
+					await addDoc(incidentsCol, {
+						type,
+						severity,
+						state,
+						lga,
+						unit,
+						description,
+						time,
+						contact,
+						ts: serverTimestamp(),
+					});
+					showMsg(
+						"incident-form-msg",
+						"✅ Report submitted. Your report has been sent to the Legal team. Thank you for your courage.",
+						"success",
+					);
+					btn.innerHTML = "✓ Submitted";
+					document.getElementById("incident-desc").value = "";
+					document.getElementById("incident-lga").value = "";
+					document.getElementById("incident-unit").value = "";
+					document.getElementById("incident-time").value = "";
+					document.getElementById("incident-contact").value = "";
+					document
+						.querySelectorAll(".incident-type-btn")
+						.forEach((b) => b.classList.remove("selected"));
+					document
+						.querySelectorAll(".severity-btn")
+						.forEach((b) => b.classList.remove("selected"));
+					document.getElementById("incident-type-val").value = "";
+					document.getElementById("incident-severity-val").value = "";
+					setTimeout(() => {
+						btn.disabled = false;
+						btn.innerHTML = "Submit Incident Report";
+					}, 3000);
+				} catch (e) {
+					showMsg("incident-form-msg", "Error submitting. Try again.", "error");
+					btn.disabled = false;
+					btn.innerHTML = "Submit Incident Report";
+				}
+			};
+
+			// ── ADMIN HELPER (VOTER FORM) ──
+			document
+				.getElementById("toggleAdminBtn")
+				.addEventListener("click", () => {
+					const panel = document.getElementById("adminPanel");
+					panel.style.display =
+						panel.style.display === "block" ? "none" : "block";
+				});
+			document
+				.getElementById("unlockHelperBtn")
+				.addEventListener("click", () => {
+					const code = document.getElementById("adminCode").value.trim();
+					if (code === ANTI_DUPLICATE_CONFIG.adminOverrideCode) {
+						adminOverrideActive = true;
+						adminOverrideUsed = false;
+						document.getElementById("helperStatus").innerHTML =
+							"✅ Override ACTIVE — submit once for another person.";
+						document.getElementById("helperStatus").style.color = "green";
+						const btn = document.getElementById("submit-btn");
+						btn.disabled = false;
+						btn.style.opacity = "1";
+						btn.style.background = "var(--gold)";
+						btn.innerHTML = "🌟 SUBMIT FOR ASSISTED PERSON (Override Mode)";
+						document.getElementById("duplicate-warning").style.display = "none";
+						setTimeout(
+							() =>
+								(document.getElementById("adminPanel").style.display = "none"),
+							2000,
+						);
+					} else {
+						document.getElementById("helperStatus").innerHTML =
+							"❌ Invalid code.";
+						document.getElementById("helperStatus").style.color = "red";
+					}
+				});
+
+			// ── ADMIN PIN ──
+			window.unlockAdmin = function () {
+				const pin = document.getElementById("admin-pin-input").value.trim();
+				if (pin === ANTI_DUPLICATE_CONFIG.adminPIN) {
+					document.getElementById("admin-gate-screen").style.display = "none";
+					document.getElementById("admin-content").style.display = "block";
+					renderInsights(allVoters);
+					renderVolunteerDashboard(allVolunteers);
+					renderIncidentLog(allIncidents);
+				} else {
+					document.getElementById("admin-pin-error").style.display = "block";
+				}
+			};
+
+			// ── UI HELPERS ──
+			function showMsg(id, text, type) {
+				const m = document.getElementById(id);
+				m.innerText = text;
+				m.className = `form-msg ${type}`;
+				m.style.display = "block";
+				setTimeout(() => {
+					if (m.style.display === "block") m.style.display = "none";
+				}, 6000);
+			}
 			function timeAgo(ts) {
 				if (!ts) return "recent";
 				const ms = ts.toMillis ? ts.toMillis() : ts;
@@ -1397,180 +3990,38 @@
 				return `${Math.floor(hrs / 24)}d ago`;
 			}
 
-			function initFirebase() {
-				if (
-					!FIREBASE_CONFIG.apiKey ||
-					FIREBASE_CONFIG.apiKey.includes("PASTE_YOUR")
-				) {
-					const statusEl = document.getElementById("fb-status");
-					statusEl.innerText = "⚠️ Config missing";
-					statusEl.classList.remove("loading", "ok");
-					statusEl.classList.add("err");
-					return false;
-				}
-				try {
-					const app = initializeApp(FIREBASE_CONFIG);
-					db = getFirestore(app);
-					colRef = collection(db, "voters");
-					onSnapshot(
-						colRef,
-						(snap) => {
-							const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-							renderDashboard(docs);
-
-							// FIX: Remove 'loading' class and add 'ok'
-							const statusEl = document.getElementById("fb-status");
-							statusEl.innerText = "🔴 Live";
-							statusEl.classList.remove("loading", "err");
-							statusEl.classList.add("ok");
-						},
-						(err) => {
-							console.error(err);
-							const statusEl = document.getElementById("fb-status");
-							statusEl.innerText = "Error";
-							statusEl.classList.remove("loading", "ok");
-							statusEl.classList.add("err");
-						},
-					);
-					return true;
-				} catch (e) {
-					console.error(e);
-					const statusEl = document.getElementById("fb-status");
-					statusEl.innerText = "Init error";
-					statusEl.classList.remove("loading", "ok");
-					statusEl.classList.add("err");
-					return false;
-				}
-			}
-			initFirebase();
-
-			window.submitForm = async function () {
-				const msgDiv = document.getElementById("form-msg");
-				msgDiv.className = "form-msg";
-				msgDiv.style.display = "none";
-
-				const fname = document.getElementById("fname").value.trim();
-				const state = document.getElementById("state-select").value;
-				const regState = document.getElementById("reg-state-select").value;
-				const year = document.getElementById("year-select").value;
-				const pvcStatus = document.getElementById("pvc-status").value;
-
-				if (!fname || !state || !regState || !year || !pvcStatus) {
-					showMsg("Please fill all fields.", "error");
-					return;
-				}
-
-				// Check for duplicate submission (PERSISTENT check)
-				const alreadySubmitted = hasAlreadySubmitted();
-
-				if (alreadySubmitted && !adminOverrideActive) {
-					showMsg(
-						"❌ This device has already registered. Only one submission per person is allowed. If you're helping someone else, use the 'Authorized helper' override code below.",
-						"warning",
-					);
-					return;
-				}
-
-				// If admin override is active but already used this session, prevent multiple
-				if (adminOverrideActive && adminOverrideUsed) {
-					showMsg(
-						"Override already used for this session. Refresh page or re-enter code to assist another person.",
-						"warning",
-					);
-					return;
-				}
-
-				const btn = document.getElementById("submit-btn");
-				btn.disabled = true;
-				btn.innerHTML =
-					'<span style="display:inline-block; width:12px;height:12px;border:2px solid white; border-top-color:transparent; border-radius:50%; animation: spin 0.6s linear infinite;"></span> Recording...';
-
-				const channels =
-					[...document.querySelectorAll('input[name="channel"]:checked')]
-						.map((c) => c.value)
-						.join(", ") || "direct";
-
-				try {
-					const docRef = await addDoc(colRef, {
-						fname,
-						state,
-						regState,
-						year: parseInt(year),
-						pvcStatus,
-						channels,
-						ts: serverTimestamp(),
-						submittedByHelper: adminOverrideActive ? true : false,
-					});
-
-					// Only mark as permanently submitted if NOT in admin override mode
-					if (!adminOverrideActive) {
-						markAsPermanentlySubmitted(docRef.id);
-						showMsg(
-							`✅ Registration successful! ${fname}, your data is now permanently recorded. This device cannot submit again.`,
-							"success",
-						);
-					} else {
-						showMsg(
-							`✅ Assisted registration complete! ${fname} has been registered. Override mode will now deactivate.`,
-							"success",
-						);
-						adminOverrideUsed = true;
-						adminOverrideActive = false;
-					}
-
-					btn.innerHTML = "✓ Registered!";
-					btn.style.background = "#0d4a2d";
-
-					// Reset admin override UI
-					if (adminOverrideUsed) {
-						setTimeout(() => {
-							const originalBtn = document.getElementById("submit-btn");
-							originalBtn.innerHTML = "✓ Submit & Secure Record";
-							originalBtn.style.background = "";
-							originalBtn.disabled = hasAlreadySubmitted() ? true : false;
-							if (hasAlreadySubmitted() && !adminOverrideActive) {
-								originalBtn.disabled = true;
-								originalBtn.style.opacity = "0.6";
-							}
-						}, 2000);
-					}
-
-					setTimeout(() => {
-						btn.disabled = false;
-						if (!adminOverrideActive && hasAlreadySubmitted()) {
-							btn.disabled = true;
-							btn.style.opacity = "0.6";
-						}
-					}, 2000);
-
-					// Refresh warning display
-					checkAndShowDuplicateWarning();
-				} catch (e) {
-					console.error(e);
-					showMsg(
-						"Firebase error: check rules/permissions. Contact admin.",
-						"error",
-					);
-					btn.disabled = false;
-					btn.innerHTML = "✓ Submit & Secure Record";
-				}
+			window.selectIncidentType = function (btn, val) {
+				document
+					.querySelectorAll(".incident-type-btn")
+					.forEach((b) => b.classList.remove("selected"));
+				btn.classList.add("selected");
+				document.getElementById("incident-type-val").value = val;
+			};
+			window.selectSeverity = function (btn, val) {
+				document
+					.querySelectorAll(".severity-btn")
+					.forEach((b) => b.classList.remove("selected"));
+				btn.classList.add("selected");
+				document.getElementById("incident-severity-val").value = val;
 			};
 
-			function showMsg(text, type) {
-				const m = document.getElementById("form-msg");
-				m.innerText = text;
-				m.className = `form-msg ${type}`;
-				m.style.display = "block";
-				setTimeout(() => {
-					if (m.style.display === "block") m.style.display = "none";
-				}, 5000);
-			}
+			// ── TABS ──
+			window.switchTab = function (name) {
+				document
+					.querySelectorAll(".tab-content")
+					.forEach((el) => el.classList.remove("active"));
+				document
+					.querySelectorAll(".tab-btn")
+					.forEach((el) => el.classList.remove("active"));
+				document.getElementById(`tab-content-${name}`).classList.add("active");
+				document.getElementById(`tab-${name}`).classList.add("active");
+				window.scrollTo({
+					top: document.querySelector(".tab-bar").offsetTop - 60,
+					behavior: "smooth",
+				});
+			};
 
-			// Check on page load
-			window.addEventListener("DOMContentLoaded", () => {
-				checkAndShowDuplicateWarning();
-			});
-
+			// ── SMOOTH SCROLL ──
 			document.querySelectorAll('a[href^="#"]').forEach((a) =>
 				a.addEventListener("click", (e) => {
 					const target = document.querySelector(a.getAttribute("href"));
@@ -1581,9 +4032,8 @@
 				}),
 			);
 
-			const styleSheet = document.createElement("style");
-			styleSheet.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
-			document.head.appendChild(styleSheet);
+			// ── INIT ──
+			window.addEventListener("DOMContentLoaded", checkAndShowDuplicateWarning);
 		</script>
 	</body>
 </html>
