@@ -8,7 +8,7 @@
 		/>
 		<title>PVC Watch — Nigeria 2027 Voter Tracker</title>
 		<link rel="icon" type="image/svg+xml" href="pvcwatch-icon.svg" />
-		<link rel="stylesheet" href="styles.css">
+		<link rel="stylesheet" href="styles.css" />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
 			rel="stylesheet"
@@ -1606,11 +1606,36 @@
 				</div>
 
 				<div id="admin-content" style="display: none">
-					<div class="full-width">
+					<div
+						style="
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							margin-bottom: 1rem;
+						"
+					>
+						<div></div>
+						<button
+							class="download-btn"
+							onclick="downloadAllData()"
+							style="background: #4a4a4a; color: white"
+						>
+							📦 Download All Data
+						</button>
+					</div>
+					<div class="full-width admin-section">
 						<div class="section-title">Recent Voter Submissions</div>
 						<div class="section-sub">
 							Latest verified entries — for coordinator review only. Not
 							public-facing.
+						</div>
+						<div class="download-button-container">
+							<button
+								class="download-btn voter-download-btn"
+								onclick="downloadVoterSubmissions()"
+							>
+								📥 Download Voter Submissions
+							</button>
 						</div>
 						<div
 							class="dashboard-panel"
@@ -1645,11 +1670,19 @@
 						</div>
 					</div>
 
-					<div class="full-width">
+					<div class="full-width admin-section">
 						<div class="section-title">Volunteer Submissions</div>
 						<div class="section-sub">
 							All volunteer signups — full names and contact details for
 							coordinator use only.
+						</div>
+						<div class="download-button-container">
+							<button
+								class="download-btn volunteer-download-btn"
+								onclick="downloadVolunteerSubmissions()"
+							>
+								📥 Download Volunteer Submissions
+							</button>
 						</div>
 						<div
 							class="dashboard-panel"
@@ -1686,11 +1719,19 @@
 						</div>
 					</div>
 
-					<div class="full-width">
+					<div class="full-width admin-section">
 						<div class="section-title">Incident Reports</div>
 						<div class="section-sub">
 							All submitted incident reports including contact details where
 							provided. Handle with confidentiality.
+						</div>
+						<div class="download-button-container">
+							<button
+								class="download-btn incident-download-btn"
+								onclick="downloadIncidentReports()"
+							>
+								📥 Download Incident Reports
+							</button>
 						</div>
 						<div
 							class="dashboard-panel"
