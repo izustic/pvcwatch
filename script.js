@@ -126,7 +126,7 @@ function checkAndShowDuplicateWarning() {
 	const warningDiv = document.getElementById("duplicate-warning");
 	const btn = document.getElementById("submit-btn");
 	if (hasAlreadySubmitted()) {
-		warningDiv.innerHTML = `⚠️ <strong>You have already registered!</strong> One submission per device. If you're helping someone else, use the helper override below.`;
+		warningDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:top;margin-right:0px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> <strong>You have already registered!</strong> One submission per device. If you're helping someone else, use the helper override below.`;
 		warningDiv.style.display = "block";
 		btn.disabled = true;
 		btn.style.opacity = "0.6";
@@ -274,15 +274,22 @@ const TEAM_LABELS = {
 	t5: "Civic Education",
 	t6: "Legal & Advocacy",
 };
+// const TEAM_ICONS = {
+// 	t1: "💻",
+// 	t2: "📊",
+// 	t3: "🚐",
+// 	t4: "👁️",
+// 	t5: "📢",
+// 	t6: "⚖️",
+// };
 const TEAM_ICONS = {
-	t1: "💻",
-	t2: "📊",
-	t3: "🚐",
-	t4: "👁️",
-	t5: "📢",
-	t6: "⚖️",
+  t1: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop-minimal-check-icon lucide-laptop-minimal-check"><path d="M2 20h20"/><path d="m9 10 2 2 4-4"/><rect x="3" y="4" width="18" height="12" rx="2"/></svg>`,
+  t2: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>`,
+  t3: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  t4: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  t5: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-megaphone-icon lucide-megaphone"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg>`,
+  t6: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg>`,
 };
-
 function renderVolunteerDashboard(vols) {
 	// State list
 	const counts = {};
@@ -387,6 +394,7 @@ function renderVolunteerDashboard(vols) {
 
 // ── TEAM SELECTION UI ──
 window.selectTeam = function (teamId) {
+	if (typeof lucide !== 'undefined') lucide.createIcons();
 	document.getElementById("vol-team").value = teamId;
 	document
 		.querySelectorAll(".vol-team-fields")
@@ -402,7 +410,7 @@ window.selectTeam = function (teamId) {
 		t5: "Content, media, radio & translation roles",
 		t6: "Legal, advocacy & policy roles",
 	};
-	document.getElementById("vol-form-icon").innerText =
+	document.getElementById("vol-form-icon").innerHTML =
 		TEAM_ICONS[teamId] || "🙋";
 	document.getElementById("vol-form-title").innerText =
 		`${TEAM_LABELS[teamId]} — Volunteer Form`;

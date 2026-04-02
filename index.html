@@ -13,6 +13,18 @@
 			href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
 			rel="stylesheet"
 		/>
+		<!-- <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script> -->
+		<script src="https://unpkg.com/lucide@latest"></script>
+		<script>
+			// Wait for DOM to be ready
+			document.addEventListener("DOMContentLoaded", function () {
+				if (typeof lucide !== "undefined" && lucide.createIcons) {
+					lucide.createIcons();
+				} else {
+					console.error("Lucide failed to load");
+				}
+			});
+		</script>
 		<script>
 			const FIREBASE_CONFIG = {
 				apiKey: "AIzaSyDe9vYSuBXmyIXrMXBL4ylVqATcEm946Ls",
@@ -89,30 +101,43 @@
 				onclick="switchTab('voters')"
 				id="tab-voters"
 			>
-				🗳️ Voter Registry
+				<i data-lucide="square-check-big" class="icon-small"></i>
+				<p>Voter Registry</p>
+				<!-- <i data-lucide="check-square"></i> Voter Registry -->
+				<!-- 🗳️ Voter Registry -->
 			</button>
 			<button
 				class="tab-btn"
 				onclick="switchTab('volunteer')"
 				id="tab-volunteer"
 			>
-				🙋 Volunteer Signup
+				<i data-lucide="users" class="icon-small"></i>
+				<p>Volunteer Signup</p>
+				<!-- 🙋 Volunteer Signup -->
 			</button>
 			<button
 				class="tab-btn"
 				onclick="switchTab('incidents')"
 				id="tab-incidents"
 			>
-				⚠️ Report Incident
+				<i data-lucide="alert-triangle" class="icon-small"></i>
+				<p>Report Incident</p>
+				<!-- ⚠️ Report Incident -->
 			</button>
 			<button class="tab-btn" onclick="switchTab('insights')" id="tab-insights">
-				📊 Insights
+				<i data-lucide="bar-chart" class="icon-small"></i>
+				<p>Insights</p>
+				<!-- 📊 Insights -->
 			</button>
 			<button class="tab-btn" onclick="switchTab('outreach')" id="tab-outreach">
-				📢 Outreach
+				<i data-lucide="megaphone" class="icon-small"></i>
+				<p>Outreach</p>
+				<!-- 📢 Outreach -->
 			</button>
 			<button class="tab-btn" onclick="switchTab('admin')" id="tab-admin">
-				🔒 Admin
+				<i data-lucide="shield-check" class="icon-small"></i>
+				<p>Admin</p>
+				<!-- 🔒 Admin -->
 			</button>
 		</div>
 
@@ -198,10 +223,12 @@
 							</button>
 							<div class="form-msg" id="form-msg"></div>
 							<div class="admin-override-section">
-								<span class="admin-link" id="toggleAdminBtn"
-									>🔐 Authorized helper? Click here to assist with override
-									code</span
-								>
+								<span class="admin-link" id="toggleAdminBtn">
+									<i data-lucide="lock-keyhole" class="icon-small"></i>
+									Authorized helper? Click here to assist with override code
+									<!-- 🔐 Authorized helper? Click here to assist with override
+									code -->
+								</span>
 								<div class="admin-panel" id="adminPanel">
 									<input
 										type="text"
@@ -293,7 +320,10 @@
 					</div>
 					<div class="team-picker-grid">
 						<div class="team-card" onclick="selectTeam('t1')">
-							<div class="team-card-icon">💻</div>
+							<div class="team-card-icon">
+								<i data-lucide="laptop-minimal-check"></i>
+								<!-- 💻 -->
+							</div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 1 · Tech Security</div>
 								<div class="team-card-desc">
@@ -308,7 +338,7 @@
 						</div>
 
 						<div class="team-card" onclick="selectTeam('t2')">
-							<div class="team-card-icon">📊</div>
+							<div class="team-card-icon"><i data-lucide="database"></i></div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 2 · Voter Data</div>
 								<div class="team-card-desc">
@@ -323,7 +353,7 @@
 						</div>
 
 						<div class="team-card" onclick="selectTeam('t3')">
-							<div class="team-card-icon">🚐</div>
+							<div class="team-card-icon"><i data-lucide="map-pin"></i></div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 3 · PVC Logistics</div>
 								<div class="team-card-desc">
@@ -338,7 +368,7 @@
 						</div>
 
 						<div class="team-card" onclick="selectTeam('t4')">
-							<div class="team-card-icon">👁️</div>
+							<div class="team-card-icon"><i data-lucide="eye"></i></div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 4 · Field Watch</div>
 								<div class="team-card-desc">
@@ -353,7 +383,7 @@
 						</div>
 
 						<div class="team-card" onclick="selectTeam('t5')">
-							<div class="team-card-icon">📢</div>
+							<div class="team-card-icon"><i data-lucide="megaphone"></i></div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 5 · Civic Education</div>
 								<div class="team-card-desc">
@@ -368,7 +398,7 @@
 						</div>
 
 						<div class="team-card" onclick="selectTeam('t6')">
-							<div class="team-card-icon">⚖️</div>
+							<div class="team-card-icon"><i data-lucide="scale"></i></div>
 							<div class="team-card-body">
 								<div class="team-card-name">Team 6 · Legal & Advocacy</div>
 								<div class="team-card-desc">
@@ -389,7 +419,9 @@
 					<div class="two-col">
 						<div class="form-panel">
 							<div class="form-header gold" id="vol-form-header">
-								<div class="form-header-icon" id="vol-form-icon">🙋</div>
+								<div class="form-header-icon" id="vol-form-icon">
+									<i data-lucide="user-plus"></i>
+								</div>
 								<div class="form-header-text">
 									<h3 id="vol-form-title">Volunteer Form</h3>
 									<p id="vol-form-subtitle">Join the movement</p>
@@ -1095,10 +1127,10 @@
 										line-height: 1.6;
 									"
 								>
-									⚠️ Your phone number is used only to add you to your team's
-									WhatsApp coordination group. It is never shared publicly. Your
-									name is known only to your team lead — not listed in any
-									public database.
+									<i data-lucide="alert-triangle"></i> Your phone number is used
+									only to add you to your team's WhatsApp coordination group. It
+									is never shared publicly. Your name is known only to your team
+									lead — not listed in any public database.
 								</p>
 							</div>
 						</div>
@@ -1169,7 +1201,9 @@
 				<div class="two-col">
 					<div class="form-panel">
 						<div class="form-header red">
-							<div class="form-header-icon">⚠️</div>
+							<div class="form-header-icon">
+								<i data-lucide="alert-triangle"></i>
+							</div>
 							<div class="form-header-text">
 								<h3>Election Incident Report</h3>
 								<p>Anonymous · Timestamped · Sent directly to Legal team</p>
@@ -1187,14 +1221,73 @@
 									margin-bottom: 1.2rem;
 								"
 							>
-								🔒 This report is <strong>completely anonymous</strong>. No name
-								or device information is stored. Report what you see — your
-								evidence matters.
+								<i data-lucide="lock-keyhole"></i> This report is
+								<strong>completely anonymous</strong>. No name or device
+								information is stored. Report what you see — your evidence
+								matters.
 							</div>
 
 							<div class="form-group">
 								<label>Incident Type</label>
 								<div class="incident-type-grid" id="incident-type-grid">
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'intimidation')"
+									>
+										<i data-lucide="alert-octagon"></i>
+										<span>Voter Intimidation</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'ballot-stuffing')"
+									>
+										<i data-lucide="archive-x"></i>
+										<span>Ballot Stuffing</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'result-alteration')"
+									>
+										<i data-lucide="file-pen-line"></i>
+										<span>Result Alteration</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'violence')"
+									>
+										<i data-lucide="siren"></i>
+										<span>Violence / Thuggery</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'pvc-denial')"
+									>
+										<i data-lucide="id-card-lanyard"></i>
+										<span>PVC Denial</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'unit-closure')"
+									>
+										<i data-lucide="door-closed"></i>
+										<span>Polling Unit Closure</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'observer-removal')"
+									>
+										<i data-lucide="eye-off"></i>
+										<span>Observer Removal</span>
+									</button>
+									<button
+										class="incident-type-btn"
+										onclick="selectIncidentType(this, 'other')"
+									>
+										<i data-lucide="circle-ellipsis"></i>
+										<span>Other</span>
+									</button>
+								</div>
+								<!-- <div class="incident-type-grid" id="incident-type-grid">
 									<button
 										class="incident-type-btn"
 										onclick="selectIncidentType(this, 'intimidation')"
@@ -1243,12 +1336,38 @@
 									>
 										📋 Other
 									</button>
-								</div>
+								</div> -->
 								<input type="hidden" id="incident-type-val" />
 							</div>
 
 							<div class="form-group">
 								<label>Severity</label>
+								<!-- <div class="severity-bar">
+									<button
+										class="severity-btn s1"
+										onclick="selectSeverity(this, '1')"
+									>
+										<i data-lucide="signal-low"></i>
+										<span class="sev-label">Low</span>
+										<span class="sev-desc">Minor irregularity</span>
+									</button>
+									<button
+										class="severity-btn s2"
+										onclick="selectSeverity(this, '2')"
+									>
+										<i data-lucide="signal-medium"></i>
+										<span class="sev-label">Moderate</span>
+										<span class="sev-desc">Ongoing interference</span>
+									</button>
+									<button
+										class="severity-btn s3"
+										onclick="selectSeverity(this, '3')"
+									>
+										<i data-lucide="signal-high"></i>
+										<span class="sev-label">Urgent</span>
+										<span class="sev-desc">Violence or fraud in progress</span>
+									</button>
+								</div> -->
 								<div class="severity-bar">
 									<button
 										class="severity-btn s1"
@@ -1387,7 +1506,7 @@
 					id="displacement-banner"
 					style="display: none"
 				>
-					<div class="insight-icon">⚠️</div>
+					<div class="insight-icon"><i data-lucide="alert-triangle"></i></div>
 					<div class="insight-text" id="displacement-banner-text"></div>
 				</div>
 
@@ -1472,7 +1591,7 @@
 				</div>
 				<div class="outreach-grid">
 					<div class="outreach-card">
-						<div class="outreach-icon wa">📱</div>
+						<div class="outreach-icon wa"><i data-lucide="smartphone"></i></div>
 						<div class="outreach-title">WhatsApp Broadcast</div>
 						<div class="outreach-desc">
 							Share a pre-drafted message directly to your WhatsApp contacts or
@@ -1486,7 +1605,9 @@
 						>
 					</div>
 					<div class="outreach-card">
-						<div class="outreach-icon sms">💬</div>
+						<div class="outreach-icon sms">
+							<i data-lucide="message-circle"></i>
+						</div>
 						<div class="outreach-title">SMS Outreach</div>
 						<div class="outreach-desc">
 							Send an SMS to contacts who may not use WhatsApp. Especially
@@ -1499,7 +1620,7 @@
 						>
 					</div>
 					<div class="outreach-card">
-						<div class="outreach-icon email">📧</div>
+						<div class="outreach-icon email"><i data-lucide="mail"></i></div>
 						<div class="outreach-title">Email Campaign</div>
 						<div class="outreach-desc">
 							Forward a pre-written email to your network. Ideal for reaching
@@ -1521,7 +1642,9 @@
 					</div>
 					<div class="outreach-grid">
 						<div class="outreach-card">
-							<div class="outreach-icon wa">🙋</div>
+							<div class="outreach-icon wa">
+								<i data-lucide="user-plus"></i>
+							</div>
 							<div class="outreach-title">Recruit Observers via WhatsApp</div>
 							<div class="outreach-desc">
 								Share the Field Watch volunteer form in your state and LGA
@@ -1535,7 +1658,7 @@
 							>
 						</div>
 						<div class="outreach-card">
-							<div class="outreach-icon sms">⚖️</div>
+							<div class="outreach-icon sms"><i data-lucide="scale"></i></div>
 							<div class="outreach-title">Recruit Legal Observers</div>
 							<div class="outreach-desc">
 								Know a lawyer or law student? We need 8,800+ legal observers —
@@ -1549,7 +1672,7 @@
 							>
 						</div>
 						<div class="outreach-card">
-							<div class="outreach-icon email">📻</div>
+							<div class="outreach-icon email"><i data-lucide="radio"></i></div>
 							<div class="outreach-title">Community Sensitisation</div>
 							<div class="outreach-desc">
 								Download talking points for community radio, town halls, and
@@ -1577,7 +1700,7 @@
 			<div class="tab-content" id="tab-content-admin">
 				<div id="admin-gate-screen">
 					<div class="admin-gate">
-						<h4>🔒 Admin Area</h4>
+						<h4><i data-lucide="lock"></i> Admin Area</h4>
 						<p>
 							This section contains raw voter and volunteer submissions. Access
 							is restricted to authorised coordinators.
@@ -1620,7 +1743,7 @@
 							onclick="downloadAllData()"
 							style="background: #4a4a4a; color: white"
 						>
-							📦 Download All Data
+							<i data-lucide="package"></i> Download All Data
 						</button>
 					</div>
 					<div class="full-width admin-section">
@@ -1634,7 +1757,7 @@
 								class="download-btn voter-download-btn"
 								onclick="downloadVoterSubmissions()"
 							>
-								📥 Download Voter Submissions
+								<i data-lucide="download"></i> Download Voter Submissions
 							</button>
 						</div>
 						<div
@@ -1681,7 +1804,7 @@
 								class="download-btn volunteer-download-btn"
 								onclick="downloadVolunteerSubmissions()"
 							>
-								📥 Download Volunteer Submissions
+								<i data-lucide="download"></i> Download Volunteer Submissions
 							</button>
 						</div>
 						<div
@@ -1730,7 +1853,7 @@
 								class="download-btn incident-download-btn"
 								onclick="downloadIncidentReports()"
 							>
-								📥 Download Incident Reports
+								<i data-lucide="download"></i> Download Incident Reports
 							</button>
 						</div>
 						<div
