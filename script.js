@@ -274,14 +274,6 @@ const TEAM_LABELS = {
 	t5: "Civic Education",
 	t6: "Legal & Advocacy",
 };
-// const TEAM_ICONS = {
-// 	t1: "💻",
-// 	t2: "📊",
-// 	t3: "🚐",
-// 	t4: "👁️",
-// 	t5: "📢",
-// 	t6: "⚖️",
-// };
 const TEAM_ICONS = {
   t1: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop-minimal-check-icon lucide-laptop-minimal-check"><path d="M2 20h20"/><path d="m9 10 2 2 4-4"/><rect x="3" y="4" width="18" height="12" rx="2"/></svg>`,
   t2: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>`,
