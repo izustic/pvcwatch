@@ -476,6 +476,31 @@
 										placeholder="For teams 1, 2, 5, 6 — preferred"
 									/>
 								</div>
+								<div class="form-group">
+									<label>Discord Username (optional but recommended)</label>
+									<input
+										type="text"
+										id="vol-discord"
+										placeholder="e.g. yourname or yourname#1234"
+									/>
+									<p
+										style="
+											font-size: 0.72rem;
+											color: var(--ink-light);
+											margin-top: 0.3rem;
+											line-height: 1.5;
+										"
+									>
+										Used to add you to your team's Discord channel. Don't have
+										Discord?
+										<a
+											href="https://discord.com/download"
+											target="_blank"
+											style="color: var(--green-mid)"
+											>Download it free here.</a
+										>
+									</p>
+								</div>
 
 								<!-- TEAM 1: TECH SECURITY -->
 								<div
@@ -1795,13 +1820,14 @@
 										<th>State</th>
 										<th>LGA</th>
 										<th>Role</th>
+										<th>Discord</th>
 										<th>Time</th>
 									</tr>
 								</thead>
 								<tbody id="vol-submissions-body">
 									<tr>
 										<td
-											colspan="7"
+											colspan="9"
 											style="
 												text-align: center;
 												padding: 2rem;

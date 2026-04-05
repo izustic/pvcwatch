@@ -275,13 +275,14 @@ const TEAM_LABELS = {
 	t6: "Legal & Advocacy",
 };
 const TEAM_ICONS = {
-  t1: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop-minimal-check-icon lucide-laptop-minimal-check"><path d="M2 20h20"/><path d="m9 10 2 2 4-4"/><rect x="3" y="4" width="18" height="12" rx="2"/></svg>`,
-  t2: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>`,
-  t3: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
-  t4: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
-  t5: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-megaphone-icon lucide-megaphone"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg>`,
-  t6: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg>`,
+	t1: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop-minimal-check-icon lucide-laptop-minimal-check"><path d="M2 20h20"/><path d="m9 10 2 2 4-4"/><rect x="3" y="4" width="18" height="12" rx="2"/></svg>`,
+	t2: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>`,
+	t3: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+	t4: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+	t5: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-megaphone-icon lucide-megaphone"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 6v8"/></svg>`,
+	t6: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale-icon lucide-scale"><path d="M12 3v18"/><path d="m19 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M3 7h1a17 17 0 0 0 8-2 17 17 0 0 0 8 2h1"/><path d="m5 8 3 8a5 5 0 0 1-6 0zV7"/><path d="M7 21h10"/></svg>`,
 };
+
 function renderVolunteerDashboard(vols) {
 	// State list
 	const counts = {};
@@ -366,7 +367,7 @@ function renderVolunteerDashboard(vols) {
 			.slice(0, 100);
 		volBody.innerHTML =
 			recent.length === 0
-				? `<tr><td colspan="8" style="text-align:center;padding:2rem;">No volunteers yet.</td></tr>`
+				? `<tr><td colspan="9" style="text-align:center;padding:2rem;">No volunteers yet.</td></tr>`
 				: recent
 						.map(
 							(v) => `<tr>
@@ -377,6 +378,7 @@ function renderVolunteerDashboard(vols) {
           <td>${v.state || "—"}</td>
           <td>${v.lga || v.t3lga || "—"}</td>
           <td>${v.role || "—"}</td>
+					<td>${v.discord || "—"}</td> 
           <td class="time-ago">${timeAgo(v.ts)}</td>
         </tr>`,
 						)
@@ -386,7 +388,7 @@ function renderVolunteerDashboard(vols) {
 
 // ── TEAM SELECTION UI ──
 window.selectTeam = function (teamId) {
-	if (typeof lucide !== 'undefined') lucide.createIcons();
+	if (typeof lucide !== "undefined") lucide.createIcons();
 	document.getElementById("vol-team").value = teamId;
 	document
 		.querySelectorAll(".vol-team-fields")
@@ -705,6 +707,16 @@ window.submitVolunteerForm = async function () {
 	const state = document.getElementById("vol-state").value;
 	const team = document.getElementById("vol-team").value;
 	const email = document.getElementById("vol-email").value.trim();
+	const DISCORD_INVITES = {
+		t1: "https://discord.gg/RCnHf2sj",
+		t2: "https://discord.gg/RCnHf2sj",
+		t3: "https://discord.gg/ATkpnhbX",
+		t4: "https://discord.gg/bNFQpuuj",
+		t5: "https://discord.gg/UxFXDbZf",
+		t6: "https://discord.gg/8sE6Q23U",
+	};
+	const discordInvite = DISCORD_INVITES[team];
+	const msgEl = document.getElementById("vol-form-msg");
 	if (!name || !phone || !state || !team) {
 		showMsg("vol-form-msg", "Please fill name, phone and state.", "error");
 		return;
@@ -801,17 +813,35 @@ window.submitVolunteerForm = async function () {
 		team,
 		teamLabel: TEAM_LABELS[team],
 		experience,
+		discord: document.getElementById("vol-discord").value.trim(),
 		...extra,
 		ts: serverTimestamp(),
 	};
 	// console.log("Final Data being sent to Firestore:", payload);
 	try {
 		await addDoc(volunteersCol, payload);
-		showMsg(
-			"vol-form-msg",
-			`✅ Welcome aboard, ${name}! You've joined ${TEAM_LABELS[team]}. A coordinator will contact you on WhatsApp to confirm your role and next steps.`,
-			"success",
-		);
+		msgEl.innerHTML = `
+    <strong>✅ Welcome aboard, ${name}!</strong> You've joined ${TEAM_LABELS[team]}.<br><br>
+    <a href="${discordInvite}" target="_blank" 
+       style="display:inline-flex;align-items:center;gap:0.5rem;background:#5865F2;color:white;
+              padding:0.6rem 1.2rem;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.85rem;margin-top:0.4rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+      </svg>
+      Join your ${TEAM_LABELS[team]} Discord channel →
+    </a>
+`;
+		msgEl.className = "form-msg success";
+		msgEl.style.display = "block";
+
+		setTimeout(() => {
+			if (msgEl.style.display === "block") msgEl.style.display = "none";
+		}, 30000);
+		// showMsg(
+		// 	"vol-form-msg",
+		// 	`✅ Welcome aboard, ${name}! You've joined ${TEAM_LABELS[team]}. A coordinator will contact you on WhatsApp to confirm your role and next steps.`,
+		// 	"success",
+		// );
 		btn.innerHTML = "✓ Joined!";
 		btn.style.background = "#7a4a0d";
 		[
@@ -819,6 +849,7 @@ window.submitVolunteerForm = async function () {
 			"vol-phone",
 			"vol-email",
 			"vol-experience",
+			"vol-discord",
 			"t1-portfolio",
 			"t3-lga",
 			"t4-lga",
@@ -953,10 +984,10 @@ window.unlockAdmin = function () {
 window.downloadVoterSubmissions = downloadVoterSubmissions;
 window.downloadVolunteerSubmissions = downloadVolunteerSubmissions;
 window.downloadIncidentReports = downloadIncidentReports;
-window.downloadAllData = function() {
-    downloadVoterSubmissions();
-    setTimeout(() => downloadVolunteerSubmissions(), 500);
-    setTimeout(() => downloadIncidentReports(), 1000);
+window.downloadAllData = function () {
+	downloadVoterSubmissions();
+	setTimeout(() => downloadVolunteerSubmissions(), 500);
+	setTimeout(() => downloadIncidentReports(), 1000);
 };
 
 // ── DOWNLOAD ADMIN DOCUMENTS ──
