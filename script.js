@@ -387,6 +387,22 @@ function renderVolunteerDashboard(vols) {
 }
 
 // ── TEAM SELECTION UI ──
+window.volunteerGuard = {
+	consentPromptShownAt: null,
+	consentLatencyMs: null,
+	consentGiven: null,
+	consentFlagged: false,
+	contradictionWarningShownAt: null,
+	contradictionSubmitAt: null,
+	changedAfterWarning: false,
+	refreshedAfterWarning: false,
+	unethicalResponse: null,
+	rejectedByUnethicalCheck: false,
+	answersLocked: false,
+	answersHash: null,
+	flagAcknowledged: false,
+};
+
 window.selectTeam = function (teamId) {
 	if (typeof lucide !== "undefined") lucide.createIcons();
 	document.getElementById("vol-team").value = teamId;
@@ -411,12 +427,199 @@ window.selectTeam = function (teamId) {
 	document.getElementById("vol-form-subtitle").innerText =
 		subtitles[teamId] || "";
 
+	// Reset screening flow when team is selected
+	window.resetVolunteerScreening();
+	document.getElementById("vol-basic-step").style.display = "block";
+	document.getElementById("vol-background-check").style.display = "none";
+	document.getElementById("vol-details-step").style.display = "none";
+	document.getElementById("vol-contradiction-warning").style.display = "none";
+	document.getElementById("vol-unethical-request").style.display = "none";
+
 	document.getElementById("vol-team-picker").style.display = "none";
 	document.getElementById("vol-form-section").style.display = "block";
 	window.scrollTo({
 		top: document.querySelector(".tab-bar").offsetTop - 60,
 		behavior: "smooth",
 	});
+};
+
+window.resetVolunteerScreening = function () {
+	window.volunteerGuard = {
+		consentPromptShownAt: null,
+		consentLatencyMs: null,
+		consentGiven: null,
+		consentFlagged: false,
+		contradictionWarningShownAt: null,
+		contradictionSubmitAt: null,
+		changedAfterWarning: false,
+		refreshedAfterWarning: false,
+		unethicalResponse: null,
+		rejectedByUnethicalCheck: false,
+		answersLocked: false,
+		answersHash: null,
+		flagAcknowledged: false,
+	};
+	sessionStorage.removeItem("vol_warning_shown");
+	sessionStorage.removeItem("vol_answers_hash");
+	sessionStorage.removeItem("vol_answers_timestamp");
+	sessionStorage.removeItem("vol_answers_locked");
+	const formMsg = document.getElementById("vol-form-msg");
+	if (formMsg) formMsg.textContent = "";
+	const consentWarning = document.getElementById("vol-consent-warning");
+	if (consentWarning) consentWarning.textContent = "";
+	const unethicalResult = document.getElementById("vol-unethical-result");
+	if (unethicalResult) unethicalResult.textContent = "";
+};
+
+window.continueVolunteerSignup = function () {
+	const name = document.getElementById("vol-name")?.value.trim();
+	const phone = document.getElementById("vol-phone")?.value.trim();
+	const state = document.getElementById("vol-state")?.value;
+	const meetingTime = document.getElementById("vol-meeting-time")?.value;
+	const msg = document.getElementById("vol-form-msg");
+
+	if (!name || !phone || !state || !meetingTime) {
+		if (msg)
+			msg.textContent =
+				"Please fill your name, phone, state, and preferred check-in time.";
+		return;
+	}
+
+	if (msg) msg.textContent = "";
+	document.getElementById("vol-basic-step").style.display = "none";
+	document.getElementById("vol-background-check").style.display = "block";
+	window.volunteerGuard.consentPromptShownAt = performance.now();
+};
+
+window.handleVolunteerConsent = function (response) {
+	const now = performance.now();
+	const guard = window.volunteerGuard;
+	guard.consentLatencyMs = Math.round(
+		now - (guard.consentPromptShownAt || now),
+	);
+	guard.consentGiven = response === "yes";
+	guard.consentFlagged =
+		!guard.consentGiven || guard.consentLatencyMs > 4000;
+
+	const warningEl = document.getElementById("vol-consent-warning");
+	if (warningEl) {
+		warningEl.textContent = guard.consentFlagged
+			? "Consent recorded. Your application will be marked for coordinator review."
+			: "Consent recorded. Proceed to the next step.";
+	}
+
+	document.getElementById("vol-background-check").style.display = "none";
+	document.getElementById("vol-details-step").style.display = "block";
+};
+
+window.hashVolunteerAnswers = function (trust, vote, social) {
+	const answersStr = `${trust}|${vote}|${social}`;
+	let hash = 0;
+	for (let i = 0; i < answersStr.length; i++) {
+		hash = (hash << 5) - hash + answersStr.charCodeAt(i);
+		hash = hash & hash;
+	}
+	return Math.abs(hash).toString(16);
+};
+
+window.showVolunteerContradictionWarning = function () {
+	const trust = document.getElementById("vol-inec-trust")?.value;
+	const vote = document.querySelector('input[name="vol-votebuying"]:checked')
+		?.value;
+	const social = document.querySelector(
+		'input[name="vol-socialmedia"]:checked',
+	)?.value;
+	const msg = document.getElementById("vol-form-msg");
+
+	if (!trust || !vote || !social) {
+		if (msg) msg.textContent = "Please answer the quick opinion questions.";
+		return;
+	}
+
+	if (msg) msg.textContent = "";
+
+	// Hash answers immediately and store with timestamp — IRREVERSIBLE
+	const answersHash = window.hashVolunteerAnswers(trust, vote, social);
+	const timestamp = Date.now();
+	sessionStorage.setItem("vol_answers_hash", answersHash);
+	sessionStorage.setItem("vol_answers_timestamp", timestamp);
+	sessionStorage.setItem("vol_answers_locked", "true");
+
+	window.volunteerGuard.contradictionWarningShownAt = performance.now();
+	window.volunteerGuard.answersHash = answersHash;
+	window.volunteerGuard.answersLocked = true;
+
+	// Disable all opinion inputs to prevent any changes
+	document.getElementById("vol-inec-trust").disabled = true;
+	document.querySelectorAll('input[name="vol-votebuying"]').forEach(el => el.disabled = true);
+	document.querySelectorAll('input[name="vol-socialmedia"]').forEach(el => el.disabled = true);
+
+	// Show irreversible flag message
+	const isSuspicious = parseInt(trust) > 7 && vote === "yes";
+	const flagMsg = document.getElementById("vol-warning-note");
+
+	if (isSuspicious) {
+		if (flagMsg) {
+			flagMsg.innerHTML = `<strong style="color: #856404;">⚠️ Processing your responses...</strong><p style="margin: 0.5rem 0 0; color: #856404; font-size: 0.9rem;">You answered that you trust INEC above 7 AND support prison for vote-buying. Our algorithm flags this combination as statistically anomalous. Your application has been logged for manual review. You will hear from us within 72 hours.</p>`;
+		}
+	}
+
+	// Hide all existing buttons
+	const oldButtons = document.querySelectorAll('#vol-contradiction-warning button');
+	oldButtons.forEach(btn => btn.style.display = 'none');
+
+	// Show only OK button
+	const okBtn = document.createElement('button');
+	okBtn.className = 'submit-btn gold';
+	okBtn.type = 'button';
+	okBtn.textContent = "OK, I'll wait for your review";
+	okBtn.style.marginTop = '1rem';
+	okBtn.onclick = function() {
+		document.getElementById("vol-contradiction-warning").style.display = "none";
+		document.getElementById("vol-unethical-request").style.display = "block";
+		window.volunteerGuard.flagAcknowledged = true;
+	};
+	document.getElementById("vol-contradiction-warning").appendChild(okBtn);
+
+	document.getElementById("vol-contradiction-warning").style.display = "block";
+};
+
+window.markVolunteerChangedAfterWarning = function () {
+	// Answers are now locked; prevent any changes
+	if (sessionStorage.getItem("vol_answers_locked")) {
+		return false;
+	}
+};
+
+window.showVolunteerUnethicalRequest = function () {
+	window.volunteerGuard.contradictionSubmitAt = performance.now();
+	document.getElementById("vol-contradiction-warning").style.display = "none";
+	document.getElementById("vol-unethical-request").style.display = "block";
+};
+
+window.handleVolunteerUnethicalResponse = function (response) {
+	const guard = window.volunteerGuard;
+	guard.unethicalResponse = response;
+	const note = document.getElementById("vol-unethical-result");
+
+	if (response === "yes") {
+		guard.rejectedByUnethicalCheck = true;
+		if (note) {
+			note.textContent =
+				"We only accept volunteers who refuse to spread unverified false claims. Your application has been rejected.";
+		}
+		return;
+	}
+
+	if (note) {
+		note.textContent = "Thank you. Submitting your volunteer application now.";
+	}
+	sessionStorage.removeItem("vol_warning_shown");
+
+	setTimeout(() => {
+		if (guard.rejectedByUnethicalCheck) return;
+		window.submitVolunteerForm();
+	}, 300);
 };
 
 window.backToTeamPicker = function () {
@@ -707,6 +910,26 @@ window.submitVolunteerForm = async function () {
 	const state = document.getElementById("vol-state").value;
 	const team = document.getElementById("vol-team").value;
 	const email = document.getElementById("vol-email").value.trim();
+	const guard = window.volunteerGuard || {};
+
+	// Enforce screening step completion
+	if (guard.consentGiven === null) {
+		showMsg(
+			"vol-form-msg",
+			"Please complete the initial screening before submitting.",
+			"error",
+		);
+		return;
+	}
+	if (guard.unethicalResponse !== "no") {
+		showMsg(
+			"vol-form-msg",
+			"Please complete the final screening and choose not to post the false tweet.",
+			"error",
+		);
+		return;
+	}
+
 	const DISCORD_INVITES = {
 		t1: "https://discord.gg/RCnHf2sj",
 		t2: "https://discord.gg/RCnHf2sj",
@@ -816,6 +1039,26 @@ window.submitVolunteerForm = async function () {
 		discord: document.getElementById("vol-discord").value.trim(),
 		...extra,
 		ts: serverTimestamp(),
+		screening: {
+			consentLatencyMs: guard.consentLatencyMs,
+			consentGiven: guard.consentGiven,
+			consentFlagged: guard.consentFlagged,
+			answersLocked: guard.answersLocked,
+			answersHash: guard.answersHash,
+			contradictionWarningShownAt: guard.contradictionWarningShownAt,
+			contradictionSubmitAt: guard.contradictionSubmitAt,
+			contradictionDecisionTimeMs:
+				guard.contradictionWarningShownAt && guard.contradictionSubmitAt
+					? Math.round(
+							guard.contradictionSubmitAt -
+								guard.contradictionWarningShownAt,
+					  )
+					: null,
+			changedAfterWarning: guard.changedAfterWarning,
+			refreshedAfterWarning: guard.refreshedAfterWarning,
+			flagAcknowledged: guard.flagAcknowledged,
+			unethicalResponse: guard.unethicalResponse,
+		},
 	};
 	// console.log("Final Data being sent to Firestore:", payload);
 	try {
