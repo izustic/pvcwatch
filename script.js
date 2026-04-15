@@ -564,7 +564,13 @@ window.showVolunteerContradictionWarning = function () {
 		}
 	}
 
-	// Hide all existing buttons
+	// Hide Review & Submit button from vol-details-step
+	const reviewBtn = document.getElementById("vol-review-submit-btn");
+	if (reviewBtn) reviewBtn.style.display = "none";
+	const detailsMsg = document.getElementById("vol-form-msg");
+	if (detailsMsg) detailsMsg.style.display = "none";
+
+	// Hide all existing buttons in contradiction warning
 	const oldButtons = document.querySelectorAll('#vol-contradiction-warning button');
 	oldButtons.forEach(btn => btn.style.display = 'none');
 
@@ -604,20 +610,29 @@ window.handleVolunteerUnethicalResponse = function (response) {
 
 	if (response === "yes") {
 		guard.rejectedByUnethicalCheck = true;
+		// Hide all buttons in unethical request section
+		const unethicalButtons = document.querySelectorAll('#vol-unethical-request button');
+		unethicalButtons.forEach(btn => btn.style.display = 'none');
 		if (note) {
-			note.textContent =
-				"We only accept volunteers who refuse to spread unverified false claims. Your application has been rejected.";
+			note.innerHTML = '<strong style="color: #c5192d;">❌ Application rejected</strong><p style="margin: 0.5rem 0 0; color: #856404; font-size: 0.9rem;">We only accept volunteers who refuse to spread unverified false claims. Your application has been rejected.</p>';
+			note.style.display = 'block';
 		}
 		return;
 	}
 
+	// For "No" response — proceed with submission
+	guard.unethicalResponse = response;
 	if (note) {
 		note.textContent = "Thank you. Submitting your volunteer application now.";
+		note.style.display = 'block';
 	}
+	// Hide the unethical request buttons
+	const unethicalButtons = document.querySelectorAll('#vol-unethical-request button');
+	unethicalButtons.forEach(btn => btn.style.display = 'none');
+
 	sessionStorage.removeItem("vol_warning_shown");
 
 	setTimeout(() => {
-		if (guard.rejectedByUnethicalCheck) return;
 		window.submitVolunteerForm();
 	}, 300);
 };
